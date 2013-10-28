@@ -29,25 +29,32 @@ when "openvswitch", "cisco"
 
   # Arrange for neutron-ovs-cleanup to be run on bootup of compute nodes only
   unless neutron.name == node.name
-    cookbook_file "/etc/init.d/neutron-ovs-cleanup" do
-      source "neutron-ovs-cleanup"
-      mode 00755
-    end
+    unless %w(redhat centos).include?(node.platform)
+      cookbook_file "/etc/init.d/neutron-ovs-cleanup" do
+        source "neutron-ovs-cleanup"
+        mode 00755
+      end
 
-    link "/etc/rc2.d/S20neutron-ovs-cleanup" do
-      to "../init.d/neutron-ovs-cleanup"
-    end
+      link "/etc/rc2.d/S20neutron-ovs-cleanup" do
+        to "../init.d/neutron-ovs-cleanup"
+      end
 
-    link "/etc/rc3.d/S20neutron-ovs-cleanup" do
-      to "../init.d/neutron-ovs-cleanup"
-    end
+      link "/etc/rc3.d/S20neutron-ovs-cleanup" do
+        to "../init.d/neutron-ovs-cleanup"
+      end
 
-    link "/etc/rc4.d/S20neutron-ovs-cleanup" do
-      to "../init.d/neutron-ovs-cleanup"
-    end
+      link "/etc/rc4.d/S20neutron-ovs-cleanup" do
+        to "../init.d/neutron-ovs-cleanup"
+      end
 
-    link "/etc/rc5.d/S20neutron-ovs-cleanup" do
-      to "../init.d/neutron-ovs-cleanup"
+      link "/etc/rc5.d/S20neutron-ovs-cleanup" do
+        to "../init.d/neutron-ovs-cleanup"
+      end
+    else
+      #havana from rdo comes with this script
+      service "neutron-ovs-cleanup" do
+        action [ :enable ]
+      end
     end
   end
 when "linuxbridge"
