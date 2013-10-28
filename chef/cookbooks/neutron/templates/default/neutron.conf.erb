@@ -26,6 +26,8 @@ use_syslog = <%= @use_syslog ? "True" : "False" %>
 
 
 <% if @rabbit_settings -%>
+#we have to set it explicitely since for rhel it qpid by default and not affect other distribution cause we not support anything except of rabbit
+rpc_backend=nova.openstack.common.rpc.impl_kombu
 rabbit_host=<%= @rabbit_settings[:address] %>
 <% unless @rabbit_settings[:port].nil? -%>
 rabbit_port=<%= @rabbit_settings[:port] %>
