@@ -50,11 +50,6 @@ when "openvswitch", "cisco"
       link "/etc/rc5.d/S20neutron-ovs-cleanup" do
         to "../init.d/neutron-ovs-cleanup"
       end
-    else
-      #havana from rdo comes with this script
-      service "neutron-ovs-cleanup" do
-        action [ :enable ]
-      end
     end
   end
 when "linuxbridge"
@@ -213,6 +208,14 @@ template node[:neutron][:platform][:neutron_rootwrap_sudo_template] do
   variables(:user => node[:neutron][:platform][:user],
             :binary => node[:neutron][:rootwrap])
 end
+
+if %w(redhat centos).include?(node.platform) and neutron[:neutron][:networking_plugin]=="openvswitch"
+  #havana from rdo comes with this script
+  service "neutron-ovs-cleanup" do
+    action [ :enable ]
+  end
+end
+
 
 case neutron[:neutron][:networking_plugin]
 when "openvswitch", "cisco"
