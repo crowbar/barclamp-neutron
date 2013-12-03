@@ -473,7 +473,7 @@ end
 
 
 if %w(redhat centos).include?(node.platform)
-  net_core_pkgs=%w(iproute iputils)
+  net_core_pkgs=%w(kernel iproute iputils)
 
   ruby_block "unset_reboot" do
     block do
@@ -492,13 +492,6 @@ if %w(redhat centos).include?(node.platform)
     not_if "uname -a | grep 'openstack'"
   end
 
-
-  #have to hardcode version here, should be updated in case of switching to next release
-  package "kernel" do
-    action :install
-    version "2.6.32-358.123.2.openstack.el6"
-    notifies :create, "ruby_block[set_reboot]"
-  end
 
   net_core_pkgs.each do |pkg|
     package "#{pkg}" do
