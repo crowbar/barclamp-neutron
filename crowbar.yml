@@ -111,7 +111,7 @@ rpms:
     - python-neutron
     - python-neutronclient
     - python-openvswitch
-    - kernel
+    - kernel-2.6.32-358.123.2.openstack
     - iputils
     - iproute
     - kernel-firmware
