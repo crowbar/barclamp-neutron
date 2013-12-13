@@ -35,6 +35,8 @@ rabbit_password=<%= @rabbit_settings[:password] %>
 rabbit_virtual_host=<%= @rabbit_settings[:vhost] %>
 <% end -%>
 
+rpc_backend=<%= @node[:neutron][:amqp_backend] %>
+
 <% if @networking_plugin == 'cisco' -%>
 core_plugin = neutron.plugins.cisco.network_plugin.PluginV2
 <% elsif @networking_plugin == 'openvswitch' -%>
