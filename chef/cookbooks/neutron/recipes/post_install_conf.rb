@@ -97,7 +97,7 @@ when "linuxbridge"
 end
 
 execute "create_fixed_network" do
-  command "#{neutron_cmd} net-create fixed --shared #{fixed_network_type}"
+  command "#{neutron_cmd} net-create fixed --tenant_id #{admin_tenant} --shared #{fixed_network_type}"
   not_if "out=$(#{neutron_cmd} net-list); [ $? != 0 ] || echo ${out} | grep -q ' fixed '"
   retries 5
   retry_delay 10
@@ -105,7 +105,7 @@ execute "create_fixed_network" do
 end
 
 execute "create_floating_network" do
-  command "#{neutron_cmd} net-create floating --router:external=True #{floating_network_type}"
+  command "#{neutron_cmd} net-create floating --tenant_id #{admin_tenant} --router:external=True #{floating_network_type}"
   not_if "out=$(#{neutron_cmd} net-list); [ $? != 0 ] || echo ${out} | grep -q ' floating '"
   retries 5
   retry_delay 10
@@ -113,7 +113,7 @@ execute "create_floating_network" do
 end
 
 execute "create_fixed_subnet" do
-  command "#{neutron_cmd} subnet-create --name fixed --allocation-pool start=#{fixed_pool_start},end=#{fixed_pool_end} --gateway #{fixed_router_pool_end} fixed #{fixed_range}"
+  command "#{neutron_cmd} subnet-create --tenant_id #{admin_tenant} --name fixed --allocation-pool start=#{fixed_pool_start},end=#{fixed_pool_end} --gateway #{fixed_router_pool_end} fixed #{fixed_range}"
   not_if "out=$(#{neutron_cmd} subnet-list); [ $? != 0 ] || echo ${out} | grep -q ' fixed '"
   retries 5
   retry_delay 10
@@ -121,7 +121,7 @@ execute "create_fixed_subnet" do
 end
 
 execute "create_floating_subnet" do
-  command "#{neutron_cmd} subnet-create --name floating --allocation-pool start=#{floating_pool_start},end=#{floating_pool_end} --gateway #{public_router} floating #{public_range} --enable_dhcp False"
+  command "#{neutron_cmd} subnet-create --tenant_id #{admin_tenant} --name floating --allocation-pool start=#{floating_pool_start},end=#{floating_pool_end} --gateway #{public_router} floating #{public_range} --enable_dhcp False"
   not_if "out=$(#{neutron_cmd} subnet-list); [ $? != 0 ] || echo ${out} | grep -q ' floating '"
   retries 5
   retry_delay 10
@@ -129,7 +129,7 @@ execute "create_floating_subnet" do
 end
 
 execute "create_router" do
-  command "#{neutron_cmd} router-create router-floating"
+  command "#{neutron_cmd} router-create router-floating --tenant_id #{admin_tenant}"
   not_if "out=$(#{neutron_cmd} router-list); [ $? != 0 ] || echo ${out} | grep -q router-floating"
   retries 5
   retry_delay 10
