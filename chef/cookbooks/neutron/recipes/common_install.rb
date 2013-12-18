@@ -485,7 +485,7 @@ if %w(redhat centos).include?(node.platform)
   net_core_pkgs.each do |pkg|
     bash "install net pkgs" do
       user "root"
-      code "yum install #{pkg}"
+      code "yum install -q -y #{pkg}"
       notifies :create, "ruby_block[set_reboot]"
     end
   end
