@@ -35,6 +35,8 @@ rabbit_password=<%= @rabbit_settings[:password] %>
 rabbit_virtual_host=<%= @rabbit_settings[:vhost] %>
 <% end -%>
 
+rpc_backend=<%= @node[:neutron][:amqp_backend] %>
+
 <% if @networking_plugin == 'cisco' -%>
 core_plugin = neutron.plugins.cisco.network_plugin.PluginV2
 <% elsif @networking_plugin == 'openvswitch' -%>
@@ -92,6 +94,7 @@ ssl_cert_file = <%= @ssl_cert_file %>
 
 # Private key file to use when starting API server securely
 ssl_key_file = <%= @ssl_key_file %>
+auth_strategy = keystone
 
 # CA certificate file to use when starting API server securely to
 # verify connecting clients. This is an optional parameter only required if
@@ -286,3 +289,6 @@ network_vlan_ranges = physnet1:<%= @vlan_start %>:<%= @vlan_end %>
 # Default: physical_interface_mappings =
 # Example: physical_interface_mappings = physnet1:eth1
 physical_interface_mappings = physnet1:<%=@physnet%>
+
+[keystone_authtoken]
+auth_host = 127.0.0.1
