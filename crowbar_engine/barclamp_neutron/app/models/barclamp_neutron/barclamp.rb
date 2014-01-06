@@ -1,4 +1,4 @@
-# Copyright 2011, Dell 
+# Copyright 2013, Dell 
 # 
 # Licensed under the Apache License, Version 2.0 (the "License"); 
 # you may not use this file except in compliance with the License. 
@@ -13,7 +13,7 @@
 # limitations under the License. 
 # 
 
-class NeutronService < ServiceObject
+class BarclampNeutron::Barclamp < Barclamp
 
   def initialize(thelogger)
     @bc_name = "neutron"

@@ -1,4 +1,4 @@
-# Copyright 2011, Dell 
+# Copyright 2013, Dell 
 # 
 # Licensed under the Apache License, Version 2.0 (the "License"); 
 # you may not use this file except in compliance with the License. 
@@ -13,7 +13,7 @@
 # limitations under the License. 
 # 
 
-class NeutronController < BarclampController
+class BarclampNeutron::BarclampsController < BarclampsController
   def initialize
     @service_object = NeutronService.new logger
   end
