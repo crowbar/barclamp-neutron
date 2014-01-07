@@ -26,6 +26,8 @@ use_syslog = <%= @use_syslog ? "True" : "False" %>
 
 
 <% if @rabbit_settings -%>
+#we have to set it explicitely since for rhel it qpid by default and not affect other distribution cause we not support anything except of rabbit
+rpc_backend=neutron.openstack.common.rpc.impl_kombu
 rabbit_host=<%= @rabbit_settings[:address] %>
 <% unless @rabbit_settings[:port].nil? -%>
 rabbit_port=<%= @rabbit_settings[:port] %>
@@ -83,6 +85,9 @@ router_scheduler_driver = neutron.scheduler.l3_agent_scheduler.ChanceScheduler
 router_auto_schedule = True
 metadata_ip = <%= @metadata_host %>
 metadata_port = <%= @metadata_port %>
+
+# auth_strategy have to be set explicitely cause it is set to noauth by default for rhel distribution and will not affect other distribution cause we not support noauth at all
+auth_strategy = keystone
 
 # Enable SSL on the API server
 use_ssl = <%= @ssl_enabled ? "True" : "False" %>

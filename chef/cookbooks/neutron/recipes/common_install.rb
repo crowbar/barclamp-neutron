@@ -29,25 +29,27 @@ when "openvswitch", "cisco"
 
   # Arrange for neutron-ovs-cleanup to be run on bootup of compute nodes only
   unless neutron.name == node.name
-    cookbook_file "/etc/init.d/neutron-ovs-cleanup" do
-      source "neutron-ovs-cleanup"
-      mode 00755
-    end
+    unless %w(redhat centos).include?(node.platform)
+      cookbook_file "/etc/init.d/neutron-ovs-cleanup" do
+        source "neutron-ovs-cleanup"
+        mode 00755
+      end
 
-    link "/etc/rc2.d/S20neutron-ovs-cleanup" do
-      to "../init.d/neutron-ovs-cleanup"
-    end
+      link "/etc/rc2.d/S20neutron-ovs-cleanup" do
+        to "../init.d/neutron-ovs-cleanup"
+      end
 
-    link "/etc/rc3.d/S20neutron-ovs-cleanup" do
-      to "../init.d/neutron-ovs-cleanup"
-    end
+      link "/etc/rc3.d/S20neutron-ovs-cleanup" do
+        to "../init.d/neutron-ovs-cleanup"
+      end
 
-    link "/etc/rc4.d/S20neutron-ovs-cleanup" do
-      to "../init.d/neutron-ovs-cleanup"
-    end
+      link "/etc/rc4.d/S20neutron-ovs-cleanup" do
+        to "../init.d/neutron-ovs-cleanup"
+      end
 
-    link "/etc/rc5.d/S20neutron-ovs-cleanup" do
-      to "../init.d/neutron-ovs-cleanup"
+      link "/etc/rc5.d/S20neutron-ovs-cleanup" do
+        to "../init.d/neutron-ovs-cleanup"
+      end
     end
   end
 when "linuxbridge"
@@ -200,6 +202,14 @@ template node[:neutron][:platform][:neutron_rootwrap_sudo_template] do
   variables(:user => node[:neutron][:platform][:user],
             :binary => node[:neutron][:rootwrap])
 end
+
+if %w(redhat centos).include?(node.platform) and neutron[:neutron][:networking_plugin]=="openvswitch"
+  #havana from rdo comes with this script
+  service "neutron-ovs-cleanup" do
+    action [ :enable ]
+  end
+end
+
 
 case neutron[:neutron][:networking_plugin]
 when "openvswitch", "cisco"
@@ -475,6 +485,7 @@ if %w(redhat centos).include?(node.platform)
     action :create
     not_if "uname -a | grep 'openstack'"
   end
+
 
   net_core_pkgs.each do |pkg|
     package "#{pkg}" do
