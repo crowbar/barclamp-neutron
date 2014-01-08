@@ -28,7 +28,7 @@ barclamp:
     - openstack
 
 crowbar:
-  layout: 1
+  layout: 2.0
   order: 94
   run_order: 94
   chef_order: 94
