@@ -460,7 +460,7 @@ else
 end
 
 if %w(redhat centos).include?(node.platform)
-  net_core_pkgs=%w(kernel iproute iputils)
+  net_core_pkgs=%w(kernel-*openstack* iproute-*el6ost.netns* iputils)
 
   ruby_block "unset_reboot" do
     block do
@@ -480,8 +480,9 @@ if %w(redhat centos).include?(node.platform)
   end
 
   net_core_pkgs.each do |pkg|
-    package "#{pkg}" do
-      action :upgrade
+    bash "install net pkgs" do
+      user "root"
+      code "yum install -q -y #{pkg}"
       notifies :create, "ruby_block[set_reboot]"
     end
   end
