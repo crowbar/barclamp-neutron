@@ -27,6 +27,7 @@ default[:neutron][:verbose] = false
 default[:neutron][:dhcp_domain] = "openstack.local"
 default[:neutron][:networking_mode] = "local"
 default[:neutron][:networking_plugin] = "openvswitch"
+default[:neutron][:amqp_backend] = "neutron.openstack.common.rpc.impl_kombu"
 default[:neutron][:cisco_support] = false
 
 default[:neutron][:db][:database] = "neutron"
