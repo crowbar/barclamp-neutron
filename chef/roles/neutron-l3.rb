@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 name "neutron-l3"
 description "Neutron L3"
 

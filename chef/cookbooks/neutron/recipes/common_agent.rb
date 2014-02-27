@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 # Copyright 2013 Dell, Inc.
 # Copyright 2014 SUSE
 #
