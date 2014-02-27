@@ -14,10 +14,10 @@
       %legend
         = t(".plugin_header")
 
-      = select_field :networking_plugin, :collection => :networking_plugins_for_neutron
+      = select_field :networking_plugin, collection: :networking_plugins_for_neutron
 
       #mode_container
-        = select_field :networking_mode, :collection => :networking_modes_for_neutron
+        = select_field :networking_mode, collection: :networking_modes_for_neutron
 
         .alert.alert-warning#warn_ovs_vlan
           = t(".warn_ovs_vlan")
@@ -37,7 +37,7 @@
         %legend
           = t(".cisco_switches")
 
-        %table.table.table-middle{ "data-dynamic" => "#switch-entries", "data-namespace" => "cisco_switches", "data-optional" => "", "data-invalid" => t(".error_invalid"), "data-duplicate" => t(".error_duplicate") }
+        %table.table.table-middle{ data: { dynamic: "#switch-entries", namespace: "cisco_switches", optional: "", invalid: t(".error_invalid"), duplicate: t(".error_duplicate") } }
           %thead
             %tr
               %th.col-sm-3
@@ -53,15 +53,15 @@
           %tfoot
             %tr
               %th
-                = text_field_tag "switch[name]", "", :placeholder => t(".switch_ip"), :class => "form-control", "data-name" => "name", "data-type" => "string"
+                = text_field_tag "switch[name]", "", placeholder: t(".switch_ip"), class: "form-control", data: { name: "name", type: "string" }
               %th
-                = number_field_tag "switch[port]", "", :placeholder => t(".switch_port"), :class => "form-control", "data-name" => "port", "data-type" => "string"
+                = number_field_tag "switch[port]", "", placeholder: t(".switch_port"), class: "form-control", data: { name: "port", type: "string" }
               %th
-                = text_field_tag "switch[user]", "", :placeholder => t(".switch_user"), :class => "form-control", "data-name" => "user", "data-type" => "string"
+                = text_field_tag "switch[user]", "", placeholder: t(".switch_user"), class: "form-control", data: { name: "user", type: "string" }
               %th
-                = password_field_tag "switch[password]", "", :placeholder => t(".switch_password"), :class => "form-control", "data-name" => "password", "data-type" => "string"
+                = password_field_tag "switch[password]", "", placeholder: t(".switch_password"), class: "form-control", data: { name: "password", type: "string" }
               %th
-                = link_to t(".add_switch"), "#", :class => "btn btn-default btn-block", "data-add" => true
+                = link_to t(".add_switch"), "#", class: "btn btn-default btn-block", data: { add: true }
 
     #cisco_ports
       %fieldset
@@ -80,53 +80,53 @@
               %th.col-sm-1
           %tbody
             %tr
-              %td{ :colspan => 4 }
+              %td{ colspan: 4 }
                 .empty.alert.alert-info.text-center
                   = t(".port_hint")
 
             - nodes_by_role("nova-multi-compute-*").each do |node|
               %tr.edit
                 %td
-                  = text_field_tag "port[node]", node.alias, :placeholder => t(".port_node"), :class => "form-control", :disabled => "disabled"
+                  = text_field_tag "port[node]", node.alias, placeholder: t(".port_node"), class: "form-control", disabled: "disabled"
                 %td
-                  = select_tag "port[switch]", "", :placeholder => t(".port_switch"), :class => "form-control", "data-node" => node.handle, "data-name" => "switch"
+                  = select_tag "port[switch]", "", placeholder: t(".port_switch"), class: "form-control", data: { node: node.handle, name: "switch" }
                 %td
-                  = text_field_tag "port[number]", "", :placeholder => t(".port_number"), :class => "form-control", "data-node" => node.handle, "data-name" => "number"
+                  = text_field_tag "port[number]", "", placeholder: t(".port_number"), class: "form-control", data: { node: node.handle, name: "number" }
                 %td
-                  = link_to t(".clear_port"), "#", :class => "btn btn-default btn-block", "data-clear" => node.handle
+                  = link_to t(".clear_port"), "#", class: "btn btn-default btn-block", data: { clear: node.handle }
 
     %fieldset
       %legend
         = t(".ssl_header")
 
-      = select_field %w(api protocol), :collection => :api_protocols_for_neutron, "data-sslprefix" => "ssl", "data-sslcert" => "/etc/neutron/ssl/certs/signing_cert.pem", "data-sslkey" => "/etc/neutron/ssl/private/signing_key.pem"
+      = select_field %w(api protocol), collection: :api_protocols_for_neutron, data: { sslprefix: "ssl", sslcert: "/etc/neutron/ssl/certs/signing_cert.pem", sslkey: "/etc/neutron/ssl/private/signing_key.pem" }
 
       #ssl_container
         = boolean_field %w(ssl generate_certs)
         = string_field %w(ssl certfile)
         = string_field %w(ssl keyfile)
         = boolean_field %w(ssl insecure)
-        = boolean_field %w(ssl cert_required), "data-enabler" => "true", "data-enabler-target" => "#ssl_ca_certs"
+        = boolean_field %w(ssl cert_required), data: { enabler: "true", enabler_target: "#ssl_ca_certs" }
         = string_field %w(ssl ca_certs)
 
     = render "barclamp/git/pfsdeps"
 
-%script#switch-entries{ :type => "text/x-handlebars-template" }
+%script#switch-entries{ type: "text/x-handlebars-template" }
   {{#each entries}}
   %tr.edit
     %td
-      = text_field_tag "switch[name]", "{{name}}", :placeholder => t(".switch_ip"), :class => "form-control", :disabled => "disabled"
+      = text_field_tag "switch[name]", "{{name}}", placeholder: t(".switch_ip"), class: "form-control", disabled: "disabled"
     %td
-      = number_field_tag "switch[port]", "{{port}}", :placeholder => t(".switch_port"), :class => "form-control", "data-update" => "exports/{{name}}/port", "data-type" => "string"
+      = number_field_tag "switch[port]", "{{port}}", placeholder: t(".switch_port"), class: "form-control", data: { update: "exports/{{name}}/port", type: "string" }
     %td
-      = text_field_tag "switch[user]", "{{user}}", :placeholder => t(".switch_user"), :class => "form-control", "data-update" => "exports/{{name}}/user", "data-type" => "string"
+      = text_field_tag "switch[user]", "{{user}}", placeholder: t(".switch_user"), class: "form-control", data: { update: "exports/{{name}}/user", type: "string" }
     %td
-      = password_field_tag "switch[password]", "{{password}}", :placeholder => t(".switch_password"), :class => "form-control", "data-update" => "exports/{{name}}/password", "data-type" => "string"
+      = password_field_tag "switch[password]", "{{password}}", placeholder: t(".switch_password"), class: "form-control", data: { update: "exports/{{name}}/password", type: "string" }
     %td
-      = link_to t(".remove_switch"), "#", :class => "btn btn-default btn-block", "data-remove" => "{{name}}"
+      = link_to t(".remove_switch"), "#", class: "btn btn-default btn-block", data: { remove: "{{name}}" }
   {{else}}
   %tr
-    %td{ :colspan => 5 }
+    %td{ colspan: 5 }
       .empty.alert.alert-info.text-center
         = t(".no_switches")
   {{/each}}
