@@ -288,6 +288,22 @@ when "openvswitch", "cisco"
      not_if { node[:platform] == "suse" }
   end
 
+  directory "/etc/neutron/plugins/ml2/" do
+     mode 00775
+     owner node[:neutron][:platform][:user]
+     action :create
+     recursive true
+     not_if { node[:platform] == "suse" }
+  end
+
+  directory "/var/cache/neutron/" do
+     mode 00775
+     owner node[:neutron][:platform][:user]
+     action :create
+     recursive true
+     not_if { node[:platform] == "suse" }
+  end
+
   template agent_config_path do
     cookbook "neutron"
     source "ovs_neutron_plugin.ini.erb"
