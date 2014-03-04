@@ -106,6 +106,18 @@ else
     command "cp -r /opt/neutron/etc/neutron/plugins /etc/neutron/plugins"
     creates "/etc/neutron/plugins"
   end
+  directory "/etc/neutron/plugins/ml2" do
+    mode 0755
+    action :create
+    only_if { node[:platform] == "ubuntu" }
+  end
+  directory "/var/cache/neutron" do
+    owner neutron[:neutron][:user]
+    group neutron[:neutron][:group]
+    mode 0755
+    action :create
+    only_if { node[:platform] == "ubuntu" }
+   end
   execute "neutron_cp_rootwrap" do
     command "cp -r /opt/neutron/etc/neutron/rootwrap.d /etc/neutron/rootwrap.d"
     creates "/etc/neutron/rootwrap.d"
