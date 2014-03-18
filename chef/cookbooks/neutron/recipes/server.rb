@@ -100,8 +100,8 @@ template "/etc/sysconfig/neutron" do
 end
 
 directory "/var/cache/neutron" do
- owner neutron[:neutron][:user]
- group neutron[:neutron][:group]
+ owner node[:neutron][:user]
+ group node[:neutron][:group]
  mode 0755
  action :create
  only_if { node[:platform] == "ubuntu" }
