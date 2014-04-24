@@ -152,6 +152,24 @@ execute "add_fixed_network_to_router" do
   action :nothing
 end
 
+# Ensuring that neutron-db is OK
+
+delay_neutron_start=false
+unless system("neutron-db-check")
+  puts "Trying to stamp a neutron db..."
+  system("neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugin.ini upgrade head") or delay_neutron_start=true
+  puts "Neutron-db is not yet ready for stamping, will retry, neutron-service start will be delayed" if delay_neutron_start
+end
+
+# Ensuring that neutron-server service is running with stamped neutron-db version.
+
+service "neutron-server" do
+  supports :status => true
+  action :start
+  not_if do delay_neutron_start == true end
+end
+
+
 execute "Neutron network configuration" do
   command "#{neutron_cmd} net-list &>/dev/null"
   retries 5
