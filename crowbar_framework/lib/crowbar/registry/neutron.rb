@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+# -*- encoding : utf-8 -*-
 #
 # Copyright 2011-2013, Dell
 # Copyright 2013-2014, SUSE LINUX Products GmbH
@@ -16,14 +16,10 @@
 # limitations under the License.
 #
 
-#
-#
-# TODO: Needs to be replaced by https://github.com/basecamp/sub
-#
-#
+module Crowbar
+  module Registry
+    class Neutron < Base
 
-require File.expand_path("../barclamp_lib", __FILE__)
-@barclamp = "neutron"
-@timeout = 3600
-
-main
+    end
+  end
+end
