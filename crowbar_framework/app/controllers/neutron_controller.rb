@@ -23,4 +23,8 @@ class NeutronController < BarclampController
   def initialize_service
     @service_object = NeutronService.new logger
   end
+
+  def permitted_params
+    params.require(:neutron)
+  end
 end
