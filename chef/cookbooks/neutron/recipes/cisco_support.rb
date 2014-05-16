@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 node[:neutron][:platform][:cisco_pkgs].each { |p| package p }
 
 neutron = node

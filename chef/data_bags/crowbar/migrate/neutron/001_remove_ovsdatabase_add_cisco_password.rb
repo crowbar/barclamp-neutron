@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 def upgrade ta, td, a, d
   # the ovs_database was never really used anywhere
   a['db'].delete 'ovs_database'

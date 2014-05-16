@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 def upgrade ta, td, a, d
   unless d['elements']['neutron-server'].nil?
     d['elements']['neutron-l3'] = d['elements']['neutron-server']

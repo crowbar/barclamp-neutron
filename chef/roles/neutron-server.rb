@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 name "neutron-server"
 description "Neutron server"
 

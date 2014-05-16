@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 def upgrade ta, td, a, d
   a['num_vlans'] = ta['num_vlans']
   return a, d

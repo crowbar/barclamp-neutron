@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 def upgrade ta, td, a, d
   a['db'].delete 'cisco_database'
   a['db'].delete 'cisco_user'
