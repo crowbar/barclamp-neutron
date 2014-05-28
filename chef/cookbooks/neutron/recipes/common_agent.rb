@@ -221,6 +221,26 @@ if ['openvswitch', 'cisco', 'vmware'].include? neutron[:neutron][:networking_plu
         Chef::Log.info("#{name} usurped #{res[1].join(", ")} routes from #{bound_if}") unless res[1].empty?
       end
     end
+    source = ::Nic.new(bound_if)
+    addresses = source.addresses
+    routes = source.routes
+    template "/etc/init.d/ovs-usurp-config-#{name}" do
+      source "ovs-usurp-config.erb"
+      owner "root"
+      group "root"
+      mode "0755"
+      variables(
+        :source => bound_if,
+        :dest => name,
+        :addresses => addresses,
+        :routes => routes
+      )
+      not_if { addresses.empty? and routes.empty? }
+    end
+    service "ovs-usurp-config-#{name}" do
+      action [:enable]
+      not_if { addresses.empty? and routes.empty? }
+    end
   end
 end
 
