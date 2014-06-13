@@ -17,6 +17,7 @@ package node[:neutron][:platform][:ha_tool_pkg] unless node[:neutron][:platform]
 
 use_l3_agent = (node[:neutron][:networking_plugin] != "vmware")
 use_lbaas_agent = node[:neutron][:use_lbaas]
+use_vpnaas_agent = node[:neutron][:use_vpnaas]
 
 # Wait for all "neutron-l3" nodes to reach this point so we know that they will
 # have all the required packages installed and configuration files updated
@@ -31,6 +32,7 @@ dhcp_agent_primitive = "neutron-dhcp-agent"
 metadatda_agent_primitive = "neutron-metadata-agent"
 metering_agent_primitive =  "neutron-metering-agent"
 lbaas_agent_primitive =  "neutron-lbaas-agent"
+vpnaas_agent_primitive =  "neutron-vpnaas-agent"
 
 pacemaker_primitive l3_agent_primitive do
   agent node[:neutron][:ha][:l3][:l3_ra]
@@ -67,6 +69,12 @@ pacemaker_primitive lbaas_agent_primitive do
   only_if { use_lbaas_agent && CrowbarPacemakerHelper.is_cluster_founder?(node) }
 end
 
+pacemaker_primitive vpnaas_agent_primitive do
+  agent node[:neutron][:ha][:l3][:vpnaas_ra]
+  op node[:neutron][:ha][:l3][:op]
+  action [ :create ]
+end
+
 networking_plugin = node[:neutron][:networking_plugin]
 
 case networking_plugin
@@ -96,6 +104,7 @@ end
 group_members = []
 group_members << l3_agent_primitive if use_l3_agent
 group_members << lbaas_agent_primitive if use_lbaas_agent
+group_members << vpnaas_agent_primitive if use_vpnaas_agent
 group_members += [ dhcp_agent_primitive,
                    metadatda_agent_primitive,
                    metering_agent_primitive ]

@@ -144,6 +144,10 @@ service_plugins = "#{service_plugins}, neutron.services.firewall.fwaas_plugin.Fi
 if neutron[:neutron][:use_lbaas] then
   service_plugins = "#{service_plugins}, neutron.services.loadbalancer.plugin.LoadBalancerPlugin"
 end
+if node[:neutron][:use_vpnaas] then
+  service_plugins = "#{service_plugins}, neutron.services.vpn.plugin.VPNDriverPlugin"
+end
+
 
 template "/etc/neutron/neutron.conf" do
     cookbook "neutron"
