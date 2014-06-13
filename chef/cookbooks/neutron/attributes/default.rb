@@ -63,6 +63,8 @@ when "suse"
     :lbaas_agent_pkg => "openstack-neutron-lbaas-agent",
     :lbaas_agent_name => "openstack-neutron-lbaas-agent",
     :lbaas_haproxy_group => "haproxy",
+    :vpnaas_agent_pkg => "openstack-neutron-vpn-agent",
+    :vpnaas_agent_name => "openstack-neutron-vpn-agent",
     :metadata_agent_name => "openstack-neutron-metadata-agent",
     :metadata_agent_pkg => "openstack-neutron-metadata-agent",
     :metering_agent_pkg => "openstack-neutron-metering-agent",
@@ -93,6 +95,8 @@ when "centos", "redhat"
     :lbaas_agent_pkg => "openstack-neutron-lbaas-agent",
     :lbaas_agent_name => "neutron-lbaas-agent",
     :lbaas_haproxy_group => "nogroup",
+    :vpnaas_agent_pkg => "openstack-neutron-vpn-agent",
+    :vpnaas_agent_name => "openstack-neutron-vpn-agent",
     :metadata_agent_name => "neutron-metadata-agent",
     :metadata_agent_pkg => "openstack-neutron",
     :metering_agent_pkg => "openstack-neutron-metering-agent",
@@ -121,6 +125,8 @@ else
     :lbaas_agent_pkg => "neutron-lbaas-agent",
     :lbaas_agent_name => "neutron-lbaas-agent",
     :lbaas_haproxy_group => "nogroup",
+    :vpnaas_agent_pkg => "openstack-neutron-vpn-agent",
+    :vpnaas_agent_name => "openstack-neutron-vpn-agent",
     :metadata_agent_name => "neutron-metadata-agent",
     :metadata_agent_pkg => "neutron-metadata-agent",
     :metering_agent_pkg => "neutron-plugin-metering-agent",
@@ -145,6 +151,7 @@ end
 default[:neutron][:ha][:l3][:enabled] = false
 default[:neutron][:ha][:l3][:l3_ra] = "lsb:#{node[:neutron][:platform][:l3_agent_name]}"
 default[:neutron][:ha][:l3][:lbaas_ra] = "lsb:#{node[:neutron][:platform][:lbaas_agent_name]}"
+default[:neutron][:ha][:l3][:vpnaas_ra] = "lsb:#{node[:neutron][:platform][:vpnaas_agent_name]}"
 default[:neutron][:ha][:l3][:dhcp_ra] = "lsb:#{node[:neutron][:platform][:dhcp_agent_name]}"
 default[:neutron][:ha][:l3][:metadata_ra] = "lsb:#{node[:neutron][:platform][:metadata_agent_name]}"
 default[:neutron][:ha][:l3][:metering_ra] = "lsb:#{node[:neutron][:platform][:metering_agent_name]}"
