@@ -79,6 +79,14 @@ template "/etc/sysconfig/neutron" do
   notifies :restart, "service[#{node[:neutron][:platform][:service_name]}]"
 end
 
+directory "/var/cache/neutron" do
+ owner node[:neutron][:user]
+ group node[:neutron][:group]
+ mode 0755
+ action :create
+ only_if { node[:platform] == "ubuntu" }
+end
+
 file "/etc/default/neutron-server" do
   action :delete
   not_if { node[:platform] == "suse" }
@@ -94,6 +102,12 @@ if node[:neutron][:networking_plugin] == "cisco"
   mechanism_driver = "openvswitch,cisco_nexus"
 else
   mechanism_driver = node[:neutron][:networking_plugin]
+end
+
+directory "/etc/neutron/plugins/ml2" do
+  mode 0755
+  action :create
+  only_if { node[:platform] == "ubuntu" }
 end
 
 template plugin_cfg_path do

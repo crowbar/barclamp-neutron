@@ -121,6 +121,11 @@ execute "create_router" do
   action :nothing
 end
 
+service "neutron-server" do
+  action :restart
+  only_if { node[:platform] == "ubuntu" }
+end
+
 execute "set_router_gateway" do
   command "#{neutron_cmd} router-gateway-set router-floating floating"
   not_if "out=$(#{neutron_cmd} router-show router-floating -f shell) ; [ $? != 0 ] || eval $out && [ \"${external_gateway_info}\" != \"\" ]"
