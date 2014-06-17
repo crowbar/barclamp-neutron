@@ -146,7 +146,7 @@ template "/etc/quantum/l3_agent.ini" do
   )
 end
 
-dns_list = node[:dns][:forwarders].join(" ")
+dns_list = node[:dns][:forwarders].join(",")
 
 # Ditto
 template "/etc/quantum/dhcp_agent.ini" do
