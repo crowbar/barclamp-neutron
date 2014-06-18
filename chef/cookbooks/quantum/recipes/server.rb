@@ -146,8 +146,6 @@ template "/etc/quantum/l3_agent.ini" do
   )
 end
 
-dns_list = node[:dns][:forwarders].join(",")
-
 # Ditto
 template "/etc/quantum/dhcp_agent.ini" do
   source "dhcp_agent.ini.erb"
@@ -163,7 +161,8 @@ template "/etc/quantum/dhcp_agent.ini" do
     :dhcp_domain => node[:quantum][:dhcp_domain],
     :enable_isolated_metadata => "True",
     :enable_metadata_network => "False",
-    :nameservers => dns_list
+    :nameserver => node[:dns][:forwarders].first
+    :nameservers => node[:dns][:forwarders].join(",")
   )
 end
 

@@ -9,6 +9,7 @@ dhcp_domain = <%= @dhcp_domain %>
 use_namespaces = <%= @use_namespaces %>
 enable_isolated_metadata = <%= @enable_isolated_metadata %>
 enable_metadata_network = <%= @enable_metadata_network %>
-<% if @nameservers -%>
-dnsmasq_dns_server = <%= @nameservers %>
+<% if @nameserver -%>
+dnsmasq_dns_server = <%= @nameserver %>
+dnsmasq_dns_servers = <%= @nameservers %>
 <% end -%>
