@@ -64,7 +64,8 @@ dhcp_domain = <%= @dhcp_domain %>
 # Use another DNS server before any in /etc/resolv.conf.
 # dnsmasq_dns_server =
 <% if @nameservers -%>
-dnsmasq_dns_server = <%= @nameservers %>
+dnsmasq_dns_server = <%= @nameservers.split(',').first %>
+dnsmasq_dns_servers = <%= @nameservers %>
 <% end -%>
 
 # Limit number of leases to prevent a denial-of-service.
