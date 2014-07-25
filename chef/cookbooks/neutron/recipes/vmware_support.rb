@@ -74,35 +74,3 @@ execute "set_bridge_config" do
   command "ovs-vsctl set Bridge br-int other_config:disable-in-band=true -- set Bridge br-int fail_mode=secure"
   action :nothing
 end
-
-# Create br1, it will be used for vlan backends
-execute "create_int_br1" do
-  command "ovs-vsctl add-br br1"
-  not_if "ovs-vsctl list-br | grep -q br1"
-  notifies :run, "execute[set_external_id_br1]"
-end
-
-# Make sure br1 is always up.
-ruby_block "Bring up the internal bridge br1" do
-  block do
-    ::Nic.new('br1').up
-  end
-end
-
-execute "set_external_id_br1" do
-  command "ovs-vsctl br-set-external-id br1 bridge-id br1"
-  notifies :run, "execute[set_bridge_config_br1]"
-  action :nothing
-end
-
-execute "set_bridge_config_br1" do
-  command "ovs-vsctl set Bridge br1 fail_mode=standalone"
-  notifies :run, "execute[add_bound_if_to_br1]"
-  action :nothing
-end
-
-bound_if = node[:crowbar_wall][:network][:nets][:os_sdn].first
-execute "add_bound_if_to_br1" do
-  command "ovs-vsctl add-port br1 #{bound_if}"
-  action :nothing
-end
