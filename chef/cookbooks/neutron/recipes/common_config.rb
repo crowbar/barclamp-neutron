@@ -293,7 +293,6 @@ when "vmware"
      group "root"
      action :create
      recursive true
-     not_if { node[:platform] == "suse" }
   end
 
   template agent_config_path do
@@ -302,29 +301,9 @@ when "vmware"
     owner neutron[:neutron][:platform][:user]
     group "root"
     mode "0640"
-  end
-
-  ovs_config_path = "/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini"
-
-  directory "/etc/neutron/plugins/openvswitch/" do
-     mode 00775
-     owner node[:neutron][:platform][:user]
-     action :create
-     recursive true
-     not_if { node[:platform] == "suse" }
-  end
-
-  template ovs_config_path do
-    cookbook "neutron"
-    source "ovs_neutron_plugin.ini.erb"
-    owner neutron[:neutron][:platform][:user]
-    group "root"
-    mode "0640"
     variables(
-      :physnet => "br-tunnel",
-      :networking_mode => "gre",
-      :vlan_start => vlan_start,
-      :vlan_end => vlan_end
+      :vmware_config => neutron[:neutron][:vmware]
       )
   end
+
 end

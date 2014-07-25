@@ -62,23 +62,23 @@ when "openvswitch", "cisco"
 when "linuxbridge"
   neutron_agent = node[:neutron][:platform][:lb_agent_name]
 when "vmware"
-  neutron_agent = node[:neutron][:platform][:nvp_agent_name]
+  neutron_agent = ''
 end
 neutron_agent.slice! 'openstack-'
-
 
 pacemaker_primitive neutron_agent do
   agent node[:neutron][:ha][:l3]["#{networking_plugin}_ra"]
   op node[:neutron][:ha][:l3][:op]
   action [ :create ]
+  only_if { use_l3_agent }
 end
 
 group_members = []
 group_members << l3_agent_primitive if use_l3_agent
 group_members += [ dhcp_agent_primitive,
                    metadatda_agent_primitive,
-                   metering_agent_primitive,
-                   neutron_agent ]
+                   metering_agent_primitive ]
+group_members << neutron_agent if use_l3_agent
 
 agents_group_name = "g-neutron-agents"
 agents_clone_name = "cl-#{agents_group_name}"
