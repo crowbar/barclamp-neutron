@@ -79,6 +79,7 @@ when "suse"
     :ovs_pkgs => [ "openvswitch",
                    "openvswitch-switch",
                    "openvswitch-kmp-default" ],
+    :nsx_pkgs => [ "openvswitch-pki" ],
     :cisco_pkgs => [ "openstack-neutron-plugin-cisco" ],
     :user => "openstack-neutron",
     :ovs_modprobe => "modprobe openvswitch",
@@ -132,6 +133,7 @@ else
     :ovs_pkgs => [ "linux-headers-#{`uname -r`.strip}",
                    "openvswitch-datapath-dkms",
                    "openvswitch-switch" ],
+    :nsx_pkgs => [ "" ],
     :cisco_pkgs => [ "" ],
     :user => "neutron",
     :ovs_modprobe => "modprobe openvswitch",
@@ -147,7 +149,6 @@ default[:neutron][:ha][:l3][:metering_ra] = "lsb:#{node[:neutron][:platform][:me
 default[:neutron][:ha][:l3][:openvswitch_ra] = "lsb:#{node[:neutron][:platform][:ovs_agent_name]}"
 default[:neutron][:ha][:l3][:cisco_ra] = "lsb:#{node[:neutron][:ha][:l3][:openvswitch_ra]}"
 default[:neutron][:ha][:l3][:linuxbridge_ra] = "lsb:#{node[:neutron][:platform][:lb_agent_name]}"
-default[:neutron][:ha][:l3][:vmware_ra] = "lsb:#{node[:neutron][:platform][:nvp_agent_name]}"
 default[:neutron][:ha][:l3][:ha_tool_ra] = "ocf:openstack:neutron-ha-tool"
 default[:neutron][:ha][:l3][:op][:monitor][:interval] = "10s"
 default[:neutron][:ha][:server][:enabled] = false
