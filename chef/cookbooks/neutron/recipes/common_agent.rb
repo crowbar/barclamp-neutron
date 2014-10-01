@@ -190,7 +190,7 @@ if ['openvswitch', 'cisco', 'vmware'].include? neutron[:neutron][:networking_plu
 
   # Create the bridges Neutron needs.
   # Usurp config as needed.
-  [ [ "nova_fixed", "fixed" ],
+  [ [ "fixed", "fixed" ],
     [ "public", "public"] ].each do |net|
     bound_if = (node[:crowbar_wall][:network][:nets][net[0]].last rescue nil)
     next unless bound_if

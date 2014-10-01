@@ -111,6 +111,21 @@ class NeutronService < PacemakerServiceObject
     @logger.debug("Neutron apply_role_pre_chef_call: entering #{all_nodes.inspect}")
     return if all_nodes.empty?
 
+    role.default_attributes["neutron"]["networks"].each do |k,net|
+      db = ProposalObject.find_data_bag_item "crowbar/#{k}_network"
+      if db.nil?
+        @logger.debug("Network: creating #{k} in the network")
+        bc = Chef::DataBagItem.new
+        bc.data_bag "crowbar"
+        bc["id"] = "#{k}_network"
+        bc["network"] = net
+        bc["allocated"] = {}
+        bc["allocated_by_name"] = {}
+        db = ProposalObject.new bc
+        db.save
+      end
+    end
+
     net_svc = NetworkService.new @logger
     network_proposal = ProposalObject.find_proposal(net_svc.bc_name, "default")
     if network_proposal["attributes"]["network"]["networks"]["os_sdn"].nil?
@@ -140,15 +155,15 @@ class NeutronService < PacemakerServiceObject
       if role.default_attributes["neutron"]["networking_mode"] == "gre"
         net_svc.allocate_ip "default","os_sdn","host", n
       else
-        net_svc.enable_interface "default", "nova_fixed", n
+        net_svc.enable_interface "default", "fixed", n
         if role.default_attributes["neutron"]["networking_mode"] == "vlan"
           # Force "use_vlan" to false in VLAN mode (linuxbridge and ovs). We
           # need to make sure that the network recipe does NOT create the
           # VLAN interfaces (ethX.VLAN)
           node = NodeObject.find_node_by_name n
-          if node.crowbar["crowbar"]["network"]["nova_fixed"]["use_vlan"]
+          if node.crowbar["crowbar"]["network"]["fixed"]["use_vlan"]
             @logger.info("Forcing use_vlan to false for the nova_fixed network on node #{n}")
-            node.crowbar["crowbar"]["network"]["nova_fixed"]["use_vlan"] = false
+            node.crowbar["crowbar"]["network"]["fixed"]["use_vlan"] = false
             node.save
           end
         end

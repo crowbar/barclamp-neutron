@@ -20,6 +20,40 @@
                     "networking_mode": { "type": "str", "required": true },
                     "networking_plugin": { "type": "str", "required": true },
                     "num_vlans": { "type": "int", "required": true },
+                    "networks": {
+                      "type": "map",
+                      "required": true,
+                      "mapping": {
+                        = : {
+                          "type": "map",
+                          "required": false,
+                          "mapping": {
+                            "conduit": { "type": "str", "required": true },
+                            "vlan": { "type": "int", "required": true },
+                            "use_vlan": { "type": "bool", "required": true },
+                            "external": { "type": "bool", "required": true },
+                            "subnet": { "type": "str", "required": true, "name": "IpAddress" },
+                            "netmask": { "type": "str", "required": true, "name": "IpAddress" },
+                            "broadcast": { "type": "str", "required": true, "name": "IpAddress" },
+                            "router": { "type": "str", "name": "IpAddress" },
+                            "ranges": {
+                              "type": "map",
+                              "required": true,
+                              "mapping": {
+                                = : {
+                                  "type": "map",
+                                  "required": true,
+                                  "mapping": {
+                                    "start": { "type": "str", "required": true, "name": "IpAddress" },
+                                    "end": { "type": "str", "required": true, "name": "IpAddress" }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
                     "cisco_switches": {
                       "type" : "map",
                       "required" : false,
