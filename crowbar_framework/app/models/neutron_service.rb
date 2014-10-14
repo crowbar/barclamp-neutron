@@ -104,6 +104,28 @@ class NeutronService < PacemakerServiceObject
       validation_error("Unknown networking mode \"#{mode}\"")
     end
 
+    # Validate floating network if it is included in public network
+    network_proposal = ProposalObject.find_data_bag_item "crowbar/public_network"
+    public_net = network_proposal['network']
+    subnet_addr_public = IPAddr.new("#{public_net['subnet']}/#{public_net['netmask']}")
+
+    proposal["attributes"]["neutron"]["networks"].each do |k,net|
+      if net['external']
+        subnet_addr_floating = IPAddr.new("#{net['subnet']}/#{net['netmask']}")
+        if subnet_addr_public.include?(subnet_addr_floating)
+          if public_net['conduit'] != net['conduit']
+            validation_error("The 'conduit' interface for 'floating' and 'public' must be the same")
+          end
+          if public_net['use_vlan'] != net['use_vlan']
+            validation_error("The 'Use VLAN' setting (JSON attribute: 'use_vlan') of the 'floating' and 'public' networks must be the same.")
+          end
+          if public_net['use_vlan'] && public_net['vlan'] != net['vlan']
+            validation_error("The 'floating' and 'public' network must have the same VLAN configuration")
+          end
+        end
+      end
+    end
+
     super
   end
 
