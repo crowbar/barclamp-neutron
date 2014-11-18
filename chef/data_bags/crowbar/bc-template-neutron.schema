@@ -19,6 +19,7 @@
                     "use_lbaas": { "type": "bool", "required": true },
                     "use_l2pop": { "type": "bool", "required": true },
                     "use_dvr": { "type": "bool", "required": true },
+                    "use_infoblox": { "type": "bool", "required": true },
                     "networking_plugin": { "type": "str", "required": true },
                     "ml2_mechanism_drivers": { "type": "seq", "required": true, "sequence": [ { "type": "str" } ] },
                     "ml2_type_drivers": { "type": "seq", "required": true, "sequence": [ { "type": "str" } ] },
@@ -102,6 +103,21 @@
                       "protocol": { "type" : "str", "required" : true },
                       "service_port": { "type" : "int", "required" : true },
                       "service_host": { "type" : "str", "required" : true }
+                    }},
+                    "infoblox": { "type": "map", "required": false, "mapping": {
+                        "ib_wapi": { "type": "str", "required": true },
+                        "ib_username": { "type": "str", "required": true },
+                        "ib_password": { "type": "str", "required": true },
+                        "ib_external_network_view": { "type": "str", "required": true },
+                        "ib_default_network_view": { "type": "str", "required": true },
+                        "ib_fqdn_suffix": { "type": "str", "required": true },
+                        "ib_members": { "type": "str", "required": true },
+                        "ib_dnsserver": {
+                            "type": "seq",
+                            "required": true,
+                            "sequence": [ { "type": "str" } ]
+                        },
+                        "use_host_records_for_ip_allocation": { "type": "bool", "required": true }
                     }}
               }}
      }},

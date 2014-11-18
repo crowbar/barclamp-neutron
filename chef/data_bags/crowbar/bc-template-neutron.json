@@ -33,6 +33,7 @@
       "ml2_type_drivers": ["gre"],
       "ml2_type_drivers_default_provider_network": "gre",
       "ml2_type_drivers_default_tenant_network": "gre",
+      "use_infoblox": false,
       "num_vlans": 2000,
       "gre": {
         "tunnel_id_start": 1,
@@ -75,6 +76,17 @@
         "protocol": "http",
         "service_port": 9696,
         "service_host": "0.0.0.0"
+      },
+      "infoblox": {
+        "ib_wapi": "",
+        "ib_username": "admin",
+        "ib_password": "",
+        "ib_external_network_view": "default",
+        "ib_default_network_view": "default",
+        "ib_members": "",
+        "ib_fqdn_suffix": "",
+        "ib_dnsserver": [],
+        "use_host_records_for_ip_allocation": false
       }
     }
   },
