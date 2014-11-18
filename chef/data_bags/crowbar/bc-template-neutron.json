@@ -26,6 +26,7 @@
       "dhcp_domain": "openstack.local",
       "use_ml2": true,
       "use_lbaas": true,
+      "use_infoblox": false,
       "networking_mode": "gre",
       "networking_plugin": "openvswitch",
       "num_vlans": 2000,
@@ -59,6 +60,17 @@
         "protocol": "http",
         "service_port": 9696,
         "service_host": "0.0.0.0"
+      },
+      "infoblox": {
+        "ib_wapi": "",
+        "ib_username": "admin",
+        "ib_password": "",
+        "ib_external_network_view": "default",
+        "ib_default_network_view": "default",
+        "ib_members": "",
+        "ib_fqdn_suffix": "",
+        "ib_dnsserver": [],
+        "use_host_records_for_ip_allocation": false
       }
     }
   },

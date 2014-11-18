@@ -368,6 +368,32 @@ nova_api_insecure = <%= @nova_insecure %>
 
 # ======== end of neutron nova interactions ==========
 
+<% if node[:neutron][:use_infoblox] %>
+# ======== Infoblox/DDI specific settings ========
+# Infoblox WAPI url
+infoblox_wapi = <%= node[:neutron][:infoblox][:ib_wapi] %>
+
+# Infoblox username
+infoblox_username = <%= node[:neutron][:infoblox][:ib_username] %>
+
+# Infoblox password
+infoblox_password = <%= node[:neutron][:infoblox][:ib_password] %>
+
+# DDI driver class
+ddi_driver = neutron.ddi.drivers.infoblox.infoblox_ddi.InfobloxDDI
+
+# Infoblox conditional config path
+conditional_config = /etc/neutron/infoblox_conditional.conf
+
+# Path to a JSON file which contains available Infoblox members
+infoblox_members_config = /etc/neutron/infoblox_members.conf
+
+# Use one Infoblox member per tenant or Neutron network
+# use_one_member_per_tenant=False
+
+use_host_records_for_ip_allocation = <%= node[:neutron][:infoblox][:use_host_records_for_ip_allocation] %>
+<% end -%>
+
 [quotas]
 # Default driver to use for quota checks
 # quota_driver = neutron.db.quota_db.DbQuotaDriver
