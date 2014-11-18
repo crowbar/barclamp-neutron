@@ -120,6 +120,21 @@ template plugin_cfg_path do
   only_if { node[:neutron][:use_ml2] && node[:neutron][:networking_plugin] != "vmware" }
 end
 
+template "/etc/neutron/infoblox_members.conf" do
+  source "infoblox_members.conf.erb"
+  owner "root"
+  group node[:neutron][:platform][:group]
+  mode "0640"
+  only_if { node[:neutron][:use_infoblox] }
+end
+
+template "/etc/neutron/infoblox_conditional.conf" do
+  source "infoblox_conditional.conf.erb"
+  owner "root"
+  group node[:neutron][:platform][:group]
+  mode "0640"
+  only_if { node[:neutron][:use_infoblox] }
+end
 
 if node[:neutron][:networking_plugin] == "cisco"
   include_recipe "neutron::cisco_support"
