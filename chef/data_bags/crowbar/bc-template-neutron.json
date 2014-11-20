@@ -70,7 +70,8 @@
         "ib_members": "",
         "ib_fqdn_suffix": "",
         "ib_dnsserver": [],
-        "use_host_records_for_ip_allocation": false
+        "use_host_records_for_ip_allocation": false,
+        "enable_dhcp_relay": false
       }
     }
   },

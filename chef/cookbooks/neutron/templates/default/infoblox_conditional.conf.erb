@@ -4,7 +4,7 @@
         "is_external": false,
         "network_view": "<%= node[:neutron][:infoblox][:ib_default_network_view] %>",
         "dhcp_members": "<next-available-member>",
-        "require_dhcp_relay": false,
+        "require_dhcp_relay": "<%= node[:neutron][:infoblox][:enable_dhcp_relay] %>",
         "domain_suffix_pattern": "{subnet_name}.<%= node[:neutron][:infoblox][:ib_fqdn_suffix] %>",
         "hostname_pattern": "host-{ip_address}"
     },
@@ -13,7 +13,7 @@
         "is_external": true,
         "network_view": "<%= node[:neutron][:infoblox][:ib_external_network_view] %>",
         "dhcp_members": "<next-available-member>",
-        "require_dhcp_relay": false,
+        "require_dhcp_relay": "<%= node[:neutron][:infoblox][:enable_dhcp_relay] %>",
         "domain_suffix_pattern": "{subnet_name}.<%= node[:neutron][:infoblox][:ib_fqdn_suffix] %>",
         "hostname_pattern": "host-{ip_address}"
     }
