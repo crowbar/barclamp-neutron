@@ -6,7 +6,7 @@
         "dns_view": "<%= node[:neutron][:infoblox][:default_dns_view] %>",
         "dhcp_members": <%= node[:neutron][:infoblox][:default_dhcp_members] %>,
         "dns_members": <%= node[:neutron][:infoblox][:default_dns_members] %>,
-        "require_dhcp_relay": false,
+        "require_dhcp_relay": <%= node[:neutron][:infoblox][:enable_dhcp_relay] %>,
         "domain_suffix_pattern": "<%= node[:neutron][:infoblox][:default_domain_suffix_pattern] %>",
         "hostname_pattern": "<%= node[:neutron][:infoblox][:default_hostname_pattern] %>"
     },
@@ -17,7 +17,7 @@
         "dns_view": "<%= node[:neutron][:infoblox][:external_dns_view] %>",
         "dhcp_members": <%= node[:neutron][:infoblox][:external_dhcp_members] %>,
         "dns_members": <%= node[:neutron][:infoblox][:external_dns_members] %>,
-        "require_dhcp_relay": false,
+        "require_dhcp_relay": <%= node[:neutron][:infoblox][:enable_dhcp_relay] %>,
         "domain_suffix_pattern": "<%= node[:neutron][:infoblox][:external_domain_suffix_pattern] %>",
         "hostname_pattern": "<%= node[:neutron][:infoblox][:external_hostname_pattern] %>"
     }

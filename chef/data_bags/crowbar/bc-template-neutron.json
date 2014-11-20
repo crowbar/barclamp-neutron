@@ -87,6 +87,9 @@
         "bind_dns_records_to_fixed_address": "record:a,record:ptr",
         "unbind_dns_records_from_fixed_address": "record:a,record:ptr",
         "delete_dns_records_associated_with_fixed_address": "record:a,record:ptr,record:txt",
+        "enable_dhcp_relay": false,
+        "dhcp_relay_management_network": "",
+        "dhcp_relay_management_network_view": "",
         "default_condition": "tenant",
         "default_network_view": "default",
         "default_dns_view": "default",
@@ -100,7 +103,8 @@
         "external_dhcp_members": "\"<next-available-member>\"",
         "external_dns_members": "\"<next-available-member>\"",
         "external_domain_suffix_pattern": "{subnet_name}.cloud-test.com",
-        "external_hostname_pattern": "host-{ip_address}"
+        "external_hostname_pattern": "host-{ip_address}",
+        "enable_dhcp_relay": false
       }
     }
   },

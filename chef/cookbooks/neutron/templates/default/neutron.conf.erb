@@ -540,6 +540,9 @@ use_host_records_for_ip_allocation = <%= node[:neutron][:infoblox][:use_host_rec
 bind_dns_records_to_fixed_address = <%= node[:neutron][:infoblox][:bind_dns_records_to_fixed_address] %>
 unbind_dns_records_from_fixed_address = <%= node[:neutron][:infoblox][:unbind_dns_records_from_fixed_address] %>
 delete_dns_records_associated_with_fixed_address = <%= node[:neutron][:infoblox][:delete_dns_records_associated_with_fixed_address] %>
+
+dhcp_relay_management_network = <%= node[:neutron][:infoblox][:dhcp_relay_management_network] %>
+dhcp_relay_management_network_view = <%= node[:neutron][:infoblox][:dhcp_relay_management_network_view] %>
 <% end -%>
 
 [matchmaker_redis]
