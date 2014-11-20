@@ -31,6 +31,13 @@ interface_driver = <%= @interface_driver %>
 # Example of interface_driver option for LinuxBridge
 # interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
 
+<% if @ib_use_dhcp_relay -%>
+interface_dev_name_len = 10
+ddi_proxy_bridge = br-public
+dhclient_path = /sbin/dhclient
+dhcrelay_path = /usr/sbin/dhcrelay
+<% end -%>
+
 # The agent can use other DHCP drivers.  Dnsmasq is the simplest and requires
 # no additional setup of the DHCP server.
 # dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
