@@ -127,6 +127,14 @@ if ['openvswitch', 'cisco', 'vmware'].include? neutron[:neutron][:networking_plu
     end
   end
 
+  # This is because following error during installing packages
+  # :ArgumentError - ivalid byte sequence in US-ASCII
+  # https://github.com/opscode/chef/pull/1977
+  if RUBY_VERSION =~ /2.1/
+    Encoding.default_external = Encoding::UTF_8
+    Encoding.default_internal = Encoding::UTF_8
+  end
+
   node[:neutron][:platform][:ovs_pkgs].each { |p| package p }
 
   bash "Load openvswitch module" do
