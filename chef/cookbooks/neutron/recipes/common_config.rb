@@ -244,7 +244,7 @@ if %w(redhat centos).include?(node.platform)
 end
 
 
-vlan_start = node[:network][:networks][:nova_fixed][:vlan]
+vlan_start = neutron[:neutron][:networks][:fixed][:vlan]
 num_vlans = neutron[:neutron][:num_vlans]
 vlan_end = [vlan_start + num_vlans - 1, 4094].min
 
@@ -294,7 +294,7 @@ when "linuxbridge"
     mode "0640"
     variables(
       :sql_connection => neutron[:neutron][:db][:sql_connection],
-      :physnet => (node[:crowbar_wall][:network][:nets][:nova_fixed].first rescue nil),
+      :physnet => (node[:crowbar_wall][:network][:nets][:fixed].first rescue nil),
       :vlan_start => vlan_start,
       :vlan_end => vlan_end
       )

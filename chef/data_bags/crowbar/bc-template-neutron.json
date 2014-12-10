@@ -29,6 +29,40 @@
       "networking_mode": "gre",
       "networking_plugin": "openvswitch",
       "num_vlans": 2000,
+      "networks": {
+        "fixed": {
+          "conduit": "intf1",
+          "vlan": 500,
+          "use_vlan": true,
+          "external": false,
+          "subnet": "10.168.1.0",
+          "broadcast": "10.168.1.255",
+          "netmask": "255.255.255.0",
+          "ranges": {
+            "dhcp": {
+              "end": "10.168.1.254",
+              "start": "10.168.1.1"
+            }
+          },
+          "router": "10.168.1.1"
+        },
+        "floating": {
+          "conduit": "intf1",
+          "vlan": 300,
+          "use_vlan": false,
+          "external": true,
+          "subnet": "192.168.126.128",
+          "broadcast": "192.168.126.255",
+          "netmask": "255.255.255.128",
+          "ranges": {
+            "host": {
+              "end": "192.168.126.254",
+              "start": "192.168.126.129"
+            }
+          },
+          "router": "192.168.126.1"
+        }
+      },
       "use_syslog": false,
       "database_instance": "none",
       "db": {
@@ -67,7 +101,7 @@
     "neutron": {
       "crowbar-revision": 0,
       "crowbar-applied": false,
-      "schema-revision": 11,
+      "schema-revision": 12,
       "element_states": {
         "neutron-server": [ "readying", "ready", "applying" ],
         "neutron-l3": [ "readying", "ready", "applying" ]

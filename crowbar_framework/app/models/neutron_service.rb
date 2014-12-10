@@ -104,12 +104,49 @@ class NeutronService < PacemakerServiceObject
       validation_error("Unknown networking mode \"#{mode}\"")
     end
 
+    # Validate floating network if it is included in public network
+    network_proposal = ProposalObject.find_data_bag_item "crowbar/public_network"
+    public_net = network_proposal['network']
+    subnet_addr_public = IPAddr.new("#{public_net['subnet']}/#{public_net['netmask']}")
+
+    proposal["attributes"]["neutron"]["networks"].each do |k,net|
+      if net['external']
+        subnet_addr_floating = IPAddr.new("#{net['subnet']}/#{net['netmask']}")
+        if subnet_addr_public.include?(subnet_addr_floating)
+          if public_net['conduit'] != net['conduit']
+            validation_error("The 'conduit' interface for 'floating' and 'public' must be the same")
+          end
+          if public_net['use_vlan'] != net['use_vlan']
+            validation_error("The 'Use VLAN' setting (JSON attribute: 'use_vlan') of the 'floating' and 'public' networks must be the same.")
+          end
+          if public_net['use_vlan'] && public_net['vlan'] != net['vlan']
+            validation_error("The 'floating' and 'public' network must have the same VLAN configuration")
+          end
+        end
+      end
+    end
+
     super
   end
 
   def apply_role_pre_chef_call(old_role, role, all_nodes)
     @logger.debug("Neutron apply_role_pre_chef_call: entering #{all_nodes.inspect}")
     return if all_nodes.empty?
+
+    role.default_attributes["neutron"]["networks"].each do |k,net|
+      db = ProposalObject.find_data_bag_item "crowbar/#{k}_network"
+      if db.nil?
+        @logger.debug("Network: creating #{k} in the network")
+        bc = Chef::DataBagItem.new
+        bc.data_bag "crowbar"
+        bc["id"] = "#{k}_network"
+        bc["network"] = net
+        bc["allocated"] = {}
+        bc["allocated_by_name"] = {}
+        db = ProposalObject.new bc
+        db.save
+      end
+    end
 
     net_svc = NetworkService.new @logger
     network_proposal = ProposalObject.find_proposal(net_svc.bc_name, "default")
@@ -140,15 +177,15 @@ class NeutronService < PacemakerServiceObject
       if role.default_attributes["neutron"]["networking_mode"] == "gre"
         net_svc.allocate_ip "default","os_sdn","host", n
       else
-        net_svc.enable_interface "default", "nova_fixed", n
+        net_svc.enable_interface "default", "fixed", n
         if role.default_attributes["neutron"]["networking_mode"] == "vlan"
           # Force "use_vlan" to false in VLAN mode (linuxbridge and ovs). We
           # need to make sure that the network recipe does NOT create the
           # VLAN interfaces (ethX.VLAN)
           node = NodeObject.find_node_by_name n
-          if node.crowbar["crowbar"]["network"]["nova_fixed"]["use_vlan"]
+          if node.crowbar["crowbar"]["network"]["fixed"]["use_vlan"]
             @logger.info("Forcing use_vlan to false for the nova_fixed network on node #{n}")
-            node.crowbar["crowbar"]["network"]["nova_fixed"]["use_vlan"] = false
+            node.crowbar["crowbar"]["network"]["fixed"]["use_vlan"] = false
             node.save
           end
         end

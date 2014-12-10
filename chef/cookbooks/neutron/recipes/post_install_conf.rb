@@ -18,7 +18,7 @@ def mask_to_bits(mask)
   IPAddr.new(mask).to_i.to_s(2).count("1")
 end
 
-fixed_net = node[:network][:networks]["nova_fixed"]
+fixed_net = node[:neutron][:networks]["fixed"]
 fixed_range = "#{fixed_net["subnet"]}/#{mask_to_bits(fixed_net["netmask"])}"
 fixed_pool_start = fixed_net[:ranges][:dhcp][:start]
 fixed_pool_end = fixed_net[:ranges][:dhcp][:end]
@@ -33,7 +33,7 @@ fixed_pool_end = fixed_last_ip if fixed_last_ip < fixed_pool_end
 public_net = node[:network][:networks]["public"]
 public_range = "#{public_net["subnet"]}/#{mask_to_bits(public_net["netmask"])}"
 public_router = "#{public_net["router"]}"
-floating_net = node[:network][:networks]["nova_floating"]
+floating_net = node[:neutron][:networks]["floating"]
 floating_range = "#{floating_net["subnet"]}/#{mask_to_bits(floating_net["netmask"])}"
 floating_pool_start = floating_net[:ranges][:host][:start]
 floating_pool_end = floating_net[:ranges][:host][:end]
@@ -64,20 +64,16 @@ neutron_cmd = "neutron #{neutron_args}"
 floating_network_type = ""
 if node[:neutron][:networking_mode] == 'vlan'
   fixed_network_type = "--provider:network_type vlan --provider:segmentation_id #{fixed_net["vlan"]} --provider:physical_network physnet1"
-  if node[:network][:networks][:nova_floating][:use_vlan]
+  if node[:neutron][:networks][:floating][:use_vlan]
     floating_network_type = "--provider:network_type vlan --provider:segmentation_id #{floating_net["vlan"]} --provider:physical_network physnet1"
   else
-    floating_network_type = "--provider:network_type flat --provider:physical_network physnet1"
+    floating_network_type = "--provider:network_type flat --provider:physical_network physnet2"
   end
 end
 
-if node[:neutron][:networking_plugin] == "openvswitch"
-  if node[:neutron][:networking_mode] == 'gre'
-    fixed_network_type = "--provider:network_type gre --provider:segmentation_id 1"
-    floating_network_type = "--provider:network_type gre --provider:segmentation_id 2"
-  else
-    fixed_network_type = "--provider:network_type flat --provider:physical_network physnet1"
-  end
+if node[:neutron][:networking_plugin] == "openvswitch" && node[:neutron][:networking_mode] == 'gre'
+  fixed_network_type = "--provider:network_type gre --provider:segmentation_id 1"
+  floating_network_type = "--provider:network_type gre --provider:segmentation_id 2"
 end
 
 if node[:neutron][:networking_plugin] == "vmware"
