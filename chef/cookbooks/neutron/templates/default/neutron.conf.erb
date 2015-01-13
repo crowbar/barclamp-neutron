@@ -351,6 +351,18 @@ nova_admin_password = <%= @nova_admin_password if @nova_admin_password %>
 # Authorization URL for connection to nova in admin context.
 nova_admin_auth_url = <%= @keystone_settings['internal_auth_url'] %>
 
+# CA file for novaclient to verify server certificates
+# nova_ca_certificates_file =
+<% if @nova_ssl_cacerts -%>
+nova_ca_certificates_file = <%= @nova_ssl_cacerts %>
+<% end -%>
+
+# Boolean to control ignoring SSL errors on the nova url
+# nova_api_insecure = False
+<% if @nova_insecure -%>
+nova_api_insecure = <%= @nova_insecure %>
+<% end -%>
+
 # Number of seconds between sending events to nova if there are any events to send
 # send_events_interval = 2
 
