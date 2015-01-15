@@ -504,7 +504,9 @@ pool_timeout = <%= @sql_pool_timeout %>
 <% if node[:neutron][:use_lbaas] %>
 service_provider=LOADBALANCER:Haproxy:neutron.services.loadbalancer.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default
 <% end -%>
-#service_provider=VPN:openswan:neutron.services.vpn.service_drivers.ipsec.IPsecVPNDriver:default
+<% if node[:neutron][:use_vpnaas] %>
+service_provider=VPN:openswan:neutron.services.vpn.service_drivers.ipsec.IPsecVPNDriver:default
+<% end -%>
 # In order to activate Radware's lbaas driver you need to uncomment the next line.
 # If you want to keep the HA Proxy as the default lbaas driver, remove the attribute default from the line below.
 # Otherwise comment the HA Proxy line
