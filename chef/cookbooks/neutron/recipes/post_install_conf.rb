@@ -97,8 +97,13 @@ execute "create_floating_network" do
   action :nothing
 end
 
+dns_options = ""
+if node[:neutron][:use_infoblox]
+    dns_options = node[:neutron][:infoblox][:ib_dnsserver].map{ |s| "--dns-nameserver #{s}" }.join(" ")
+end
+
 execute "create_fixed_subnet" do
-  command "#{neutron_cmd} subnet-create --name fixed --allocation-pool start=#{fixed_pool_start},end=#{fixed_pool_end} fixed #{fixed_range}"
+  command "#{neutron_cmd} subnet-create --name fixed --allocation-pool start=#{fixed_pool_start},end=#{fixed_pool_end} fixed #{fixed_range} #{dns_options}"
   not_if "out=$(#{neutron_cmd} subnet-list); [ $? != 0 ] || echo ${out} | grep -q ' fixed '"
   retries 5
   retry_delay 10

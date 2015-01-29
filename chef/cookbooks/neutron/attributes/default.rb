@@ -76,6 +76,8 @@ when "suse"
     :nsx_pkgs => [ "openvswitch-pki",
                    "ruby2.1-rubygem-faraday" ],
     :cisco_pkgs => [ "openstack-neutron-plugin-cisco" ],
+    :dhcp_relay_pkgs => [ "dhcp-relay",
+                          "dhcp-client" ],
     :user => "neutron",
     :group => "neutron",
     :ovs_modprobe => "modprobe openvswitch",
