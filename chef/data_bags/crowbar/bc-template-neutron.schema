@@ -92,9 +92,6 @@
                         "ib_wapi": { "type": "str", "required": true },
                         "ib_username": { "type": "str", "required": true },
                         "ib_password": { "type": "str", "required": true },
-                        "ib_external_network_view": { "type": "str", "required": true },
-                        "ib_default_network_view": { "type": "str", "required": true },
-                        "ib_fqdn_suffix": { "type": "str", "required": true },
                         "ib_members": { "type": "str", "required": true },
                         "ib_dnsserver": {
                             "type": "seq",
@@ -102,7 +99,23 @@
                             "sequence": [ { "type": "str" } ]
                         },
                         "use_host_records_for_ip_allocation": { "type": "bool", "required": true },
-                        "enable_dhcp_relay": { "type": "bool", "required": true }
+                        "bind_dns_records_to_fixed_address": { "type": "str", "required": true },
+                        "unbind_dns_records_from_fixed_address": { "type": "str", "required": true },
+                        "delete_dns_records_associated_with_fixed_address": { "type": "str", "required": true },
+                        "default_condition": { "type": "str", "required": true },
+                        "default_network_view": { "type": "str", "required": true },
+                        "default_dns_view": { "type": "str", "required": true },
+                        "default_dhcp_members": { "type": "str", "required": true },
+                        "default_dns_members": { "type": "str", "required": true },
+                        "default_domain_suffix_pattern": { "type": "str", "required": true },
+                        "default_hostname_pattern": { "type": "str", "required": true },
+                        "external_condition": { "type": "str", "required": true },
+                        "external_network_view": { "type": "str", "required": true },
+                        "external_dns_view": { "type": "str", "required": true },
+                        "external_dhcp_members": { "type": "str", "required": true },
+                        "external_dns_members": { "type": "str", "required": true },
+                        "external_domain_suffix_pattern": { "type": "str", "required": true },
+                        "external_hostname_pattern": { "type": "str", "required": true }
                     }}
               }}
      }},
