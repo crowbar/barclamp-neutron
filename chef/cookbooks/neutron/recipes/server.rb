@@ -230,6 +230,7 @@ template "/etc/neutron/infoblox_members.conf" do
   group node[:neutron][:platform][:group]
   mode "0640"
   only_if { node[:neutron][:use_infoblox] }
+  notifies :restart, "service[#{node[:neutron][:platform][:service_name]}]"
 end
 
 template "/etc/neutron/infoblox_conditional.conf" do
@@ -238,6 +239,7 @@ template "/etc/neutron/infoblox_conditional.conf" do
   group node[:neutron][:platform][:group]
   mode "0640"
   only_if { node[:neutron][:use_infoblox] }
+  notifies :restart, "service[#{node[:neutron][:platform][:service_name]}]"
 end
 
 if node[:neutron][:networking_plugin] == "ml2" and node[:neutron][:ml2_mechanism_drivers].include?("cisco_nexus")

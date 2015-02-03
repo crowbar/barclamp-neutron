@@ -1,20 +1,24 @@
 [
     {
-        "condition": "tenant",
+        "condition": "<%= node[:neutron][:infoblox][:default_condition] %>",
         "is_external": false,
-        "network_view": "<%= node[:neutron][:infoblox][:ib_default_network_view] %>",
-        "dhcp_members": "<next-available-member>",
+        "network_view": "<%= node[:neutron][:infoblox][:default_network_view] %>",
+        "dns_view": "<%= node[:neutron][:infoblox][:default_dns_view] %>",
+        "dhcp_members": <%= node[:neutron][:infoblox][:default_dhcp_members] %>,
+        "dns_members": <%= node[:neutron][:infoblox][:default_dns_members] %>,
         "require_dhcp_relay": false,
-        "domain_suffix_pattern": "{subnet_name}.<%= node[:neutron][:infoblox][:ib_fqdn_suffix] %>",
-        "hostname_pattern": "host-{ip_address}"
+        "domain_suffix_pattern": "<%= node[:neutron][:infoblox][:default_domain_suffix_pattern] %>",
+        "hostname_pattern": "<%= node[:neutron][:infoblox][:default_hostname_pattern] %>"
     },
     {
-        "condition": "global",
+        "condition": "<%= node[:neutron][:infoblox][:external_condition] %>",
         "is_external": true,
-        "network_view": "<%= node[:neutron][:infoblox][:ib_external_network_view] %>",
-        "dhcp_members": "<next-available-member>",
+        "network_view": "<%= node[:neutron][:infoblox][:external_network_view] %>",
+        "dns_view": "<%= node[:neutron][:infoblox][:external_dns_view] %>",
+        "dhcp_members": <%= node[:neutron][:infoblox][:external_dhcp_members] %>,
+        "dns_members": <%= node[:neutron][:infoblox][:external_dns_members] %>,
         "require_dhcp_relay": false,
-        "domain_suffix_pattern": "{subnet_name}.<%= node[:neutron][:infoblox][:ib_fqdn_suffix] %>",
-        "hostname_pattern": "host-{ip_address}"
+        "domain_suffix_pattern": "<%= node[:neutron][:infoblox][:external_domain_suffix_pattern] %>",
+        "hostname_pattern": "<%= node[:neutron][:infoblox][:external_hostname_pattern] %>"
     }
 ]
