@@ -156,7 +156,7 @@ template "/etc/neutron/dhcp_agent.ini" do
     :dhcp_driver => "neutron.agent.linux.dhcp.Dnsmasq",
     :dhcp_domain => node[:neutron][:dhcp_domain],
     :enable_isolated_metadata => "True",
-    :enable_metadata_network => "False",
+    :enable_metadata_network => "True",
     :nameservers => dns_list
   )
 end
