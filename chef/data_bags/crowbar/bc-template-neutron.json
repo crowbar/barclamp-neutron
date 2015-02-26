@@ -90,21 +90,28 @@
         "enable_dhcp_relay": false,
         "dhcp_relay_management_network": "",
         "dhcp_relay_management_network_view": "",
-        "default_condition": "tenant",
-        "default_network_view": "default",
-        "default_dns_view": "default",
-        "default_dhcp_members": "\"<next-available-member>\"",
-        "default_dns_members": "\"<next-available-member\"",
-        "default_domain_suffix_pattern": "{subnet_name}.cloud-test.com",
-        "default_hostname_pattern": "host-{ip_address}",
-        "external_condition": "global",
-        "external_network_view": "default",
-        "external_dns_view": "default",
-        "external_dhcp_members": "\"<next-available-member>\"",
-        "external_dns_members": "\"<next-available-member>\"",
-        "external_domain_suffix_pattern": "{subnet_name}.cloud-test.com",
-        "external_hostname_pattern": "host-{ip_address}",
-        "enable_dhcp_relay": false
+        "ib_conditionals": [
+          {
+            "condition": "tenant",
+            "is_external": false,
+            "network_view": "default",
+            "dns_view": "default",
+            "dhcp_members": "\"<next-available-member>\"",
+            "dns_members": "\"<next-available-member>\"",
+            "domain_suffix_pattern": "{subnet_name}.cloud-test.com",
+            "hostname_pattern": "host-{ip_address}"
+          },
+          {
+            "condition": "global",
+            "is_external": true,
+            "network_view": "default",
+            "dns_view": "default",
+            "dhcp_members": "\"<next-available-member>\"",
+            "dns_members": "\"<next-available-member>\"",
+            "domain_suffix_pattern": "{subnet_name}.cloud-test.com",
+            "hostname_pattern": "host-{ip_address}"
+          }
+        ]
       }
     }
   },
