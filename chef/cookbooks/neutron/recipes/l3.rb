@@ -24,6 +24,9 @@ unless node[:neutron][:use_gitrepo]
   if node[:neutron][:use_lbaas]
     package node[:neutron][:platform][:lbaas_agent_pkg]
   end
+  if node[:neutron][:use_vpnaas]
+    package node[:neutron][:platform][:vpnaas_agent_pkg]
+  end
 else
   neutron_path = "/opt/neutron"
   venv_path = node[:neutron][:use_virtualenv] ? "#{neutron_path}/.venv" : nil
@@ -44,6 +47,12 @@ else
     link_service "neutron-lbaas-agent" do
       virtualenv venv_path
       bin_name "neutron-lbaas-agent --config-dir /etc/neutron/ --config-file /etc/neutron/lbaas_agent.ini"
+    end
+  end
+  if node[:neutron][:use_vpnaas]
+    link_service "neutron-vpnaas-agent" do
+      virtualenv venv_path
+      bin_name "neutron-vpnaas-agent --config-dir /etc/neutron/ --config-file /etc/neutron/vpn_agent.ini"
     end
   end
   link_service "neutron-metering-agent" do
@@ -241,6 +250,20 @@ if node[:neutron][:use_lbaas] then
   end
 end
 
+if node[:neutron][:use_vpnaas] then
+  template "/etc/neutron/vpn_agent.ini" do
+    cookbook "neutron"
+    source "vpn_agent.ini.erb"
+    owner "root"
+    group node[:neutron][:platform][:group]
+    mode "0640"
+    variables(
+      :debug => node[:neutron][:debug],
+      :interface_driver => interface_driver
+    )
+  end
+end
+
 service node[:neutron][:platform][:metering_agent_name] do
   service_name "neutron-metering-agent" if node[:neutron][:use_gitrepo]
   supports :status => true, :restart => true
@@ -257,6 +280,17 @@ if node[:neutron][:use_lbaas] then
     action [:enable, :start]
     subscribes :restart, resources("template[/etc/neutron/neutron.conf]")
     subscribes :restart, resources("template[/etc/neutron/lbaas_agent.ini]")
+    provider Chef::Provider::CrowbarPacemakerService if ha_enabled
+  end
+end
+
+if node[:neutron][:use_vpnaas] then
+  service node[:neutron][:platform][:vpnaas_agent_name] do
+    service_name "neutron-vpnaas-agent" if node[:neutron][:use_gitrepo]
+    supports :status => true, :restart => true
+    action [:enable, :start]
+    subscribes :restart, resources("template[/etc/neutron/neutron.conf]")
+    subscribes :restart, resources("template[/etc/neutron/vpn_agent.ini]")
     provider Chef::Provider::CrowbarPacemakerService if ha_enabled
   end
 end
