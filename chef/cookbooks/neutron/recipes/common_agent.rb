@@ -155,6 +155,7 @@ if neutron[:neutron][:networking_plugin] == "ml2"
   end
 end
 
+neutron_l3_ha = node.roles.include?("neutron-l3") && node[:neutron][:ha][:l3][:enabled]
 
 # openvswitch installation and configuration
 if neutron[:neutron][:networking_plugin] == 'vmware' or
@@ -248,10 +249,46 @@ if neutron[:neutron][:networking_plugin] == 'vmware' or
       command "ovs-vsctl add-br #{name}; ip link set #{name} up"
       not_if "ovs-vsctl list-br |grep -q #{name}"
     end
-    execute "Neutron: add #{bound_if} to #{name}" do
-      command "ovs-vsctl del-port #{name} #{bound_if} ; ovs-vsctl add-port #{name} #{bound_if}"
-      not_if "ovs-dpctl show system@#{name} | grep -q #{bound_if}"
+
+    # If:
+    #   * this network is on the same physical interface as the admin network
+    #   * we're running in HA mode
+    #   * corosync is configured to use multicast networking
+    # We need to stop openais/corosync before moving the network interface
+    # into the openvswitch. Otherwise we'll break corosync's multicast
+    # communication and cause fencing.
+    # For details: https://bugzilla.suse.com/show_bug.cgi?id=915176
+    handle_corosync_restart = node[:crowbar_wall][:network][:nets]["admin"].last == bound_if &&
+        neutron_l3_ha && node[:corosync][:transport] == "udp"
+
+    not_if_clause = "ovs-vsctl iface-to-br #{bound_if} | grep -q #{name}"
+
+    if handle_corosync_restart
+      # Put the whole cluster into maintenance mode before shutting down
+      # corosync. It's not enough to put only single nodes into maintenance
+      # mode here as the remaining nodes will immediately fence the node in
+      # maintenance once corosync gets stopped on it. (For details see:
+      # https://bugzilla.suse.com/show_bug.cgi?id=917593)
+      #
+      # As this operation affects all cluster nodes only do it on the founder.
+      if (CrowbarPacemakerHelper.is_cluster_founder?(node))
+        execute "enable maintenance mode" do
+          command "crm --wait configure property maintenance-mode=true"
+          not_if not_if_clause
+        end
+      end
+
+      crowbar_pacemaker_sync_mark "sync-neutron-l3_before_network_reconfig" do
+        not_if not_if_clause
+      end
+
+      service "stop #{node[:corosync][:platform][:service_name]} for network reconfiguration" do
+        service_name node[:corosync][:platform][:service_name]
+        action :stop
+        not_if not_if_clause
+      end
     end
+
     ruby_block "Have #{name} usurp config from #{bound_if}" do
       block do
         target = ::Nic.new(name)
@@ -260,10 +297,40 @@ if neutron[:neutron][:networking_plugin] == 'vmware' or
         Chef::Log.info("#{name} usurped #{res[1].join(", ")} routes from #{bound_if}") unless res[1].empty?
       end
     end
+
+    execute "Neutron: add #{bound_if} to #{name}" do
+      command "ovs-vsctl add-port #{name} #{bound_if}"
+      not_if not_if_clause
+    end
     source = ::Nic.new(bound_if)
     # filter out cluster VIPs that a currently assigned to the interface
     addresses = source.addresses.select { |address| my_addresses.include? address }
     routes = source.routes
+
+    not_if_condition = addresses.empty? and routes.empty?
+
+    # Try to bring the cluster back up.
+    if handle_corosync_restart
+      service "start #{node[:corosync][:platform][:service_name]} after network reconfiguration" do
+        service_name node[:corosync][:platform][:service_name]
+        action [:start]
+        not_if { not_if_condition }
+        # ruby_block[wait for cluster to be online] is defined in pacemaker::default
+        notifies :run, "ruby_block[wait for cluster to be online]", :immediately
+      end
+
+      crowbar_pacemaker_sync_mark "sync-neutron-l3_cluster_online" do
+        not_if { not_if_condition }
+      end
+
+      # Clear maintenance flag again on the founder
+      execute "disable maintenance mode" do
+        command "crm --wait configure property maintenance-mode=false"
+        action :run
+        not_if { not_if_condition }
+      end if (CrowbarPacemakerHelper.is_cluster_founder?(node))
+    end
+
     template "/etc/init.d/ovs-usurp-config-#{name}" do
       source "ovs-usurp-config.erb"
       owner "root"
@@ -279,7 +346,7 @@ if neutron[:neutron][:networking_plugin] == 'vmware' or
       # executed for the first time, the physical interface (eth) will not have
       # any addresses or routes assigned anymore. So we should not recreate the
       # init script in that case. Neither should it be removed.
-      not_if { addresses.empty? and routes.empty? }
+      not_if { not_if_condition }
     end
     service "ovs-usurp-config-#{name}" do
       # Don't start it here. It only needs to be executed during boot.
@@ -307,8 +374,6 @@ else
 end
 
 include_recipe "neutron::common_config"
-
-neutron_l3_ha = node.roles.include?("neutron-l3") && node[:neutron][:ha][:l3][:enabled]
 
 service neutron_agent do
   supports :status => true, :restart => true

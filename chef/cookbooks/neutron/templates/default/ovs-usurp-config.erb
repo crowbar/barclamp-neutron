@@ -6,6 +6,8 @@
 # Should-Start:
 # Required-Stop:     $network openvswitch-switch
 # Should-Stop: 
+# X-Start-Before:    crowbar_join openais
+# X-Stop-After:      crowbar_join openais
 # Default-Start:     3 5
 # Default-Stop:      0 1 2 6
 # Short-Description: Usurping IPs and Routes from <%= @source %> to <%= @dest %>
