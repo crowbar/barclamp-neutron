@@ -35,7 +35,7 @@ interface_driver = <%= @interface_driver %>
 interface_dev_name_len = 9
 root_helper = sudo neutron-rootwrap /etc/neutron/rootwrap.conf
 dhcp_agent_manager = neutron.agent.dhcp_agent.DhcpAgentWithStateReport
-dhcp_relay_bridge = <%= @dhcp_relay_bridge %>
+dhcp_relay_bridge = <%= node[:neutron][:infoblox][:dhcp_relay_interface] %>
 dhclient_path = <%= node[:neutron][:platform][:dhcp_relay_install_root] %>/sbin/dhclient
 dhcrelay_path = <%= node[:neutron][:platform][:dhcp_relay_install_root] %>/usr/sbin/dhcrelay
 <% end -%>

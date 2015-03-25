@@ -83,7 +83,7 @@ when "suse"
                           "dhcp-relay",
                           "dhcp-client",
                           "dhcp-server" ],
-    :dhcp_relay_install_root => "/",
+    :dhcp_relay_install_root => "",
     :user => "neutron",
     :group => "neutron",
     :ovs_modprobe => "modprobe openvswitch",

@@ -88,6 +88,7 @@
         "unbind_dns_records_from_fixed_address": "record:a,record:ptr",
         "delete_dns_records_associated_with_fixed_address": "record:a,record:ptr,record:txt",
         "enable_dhcp_relay": false,
+        "dhcp_relay_interface": "br-fixed",
         "dhcp_relay_management_network": "",
         "dhcp_relay_management_network_view": "",
         "ib_conditionals": [

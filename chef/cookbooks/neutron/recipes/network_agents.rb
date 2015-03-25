@@ -161,7 +161,6 @@ template "/etc/neutron/dhcp_agent.ini" do
     :resync_interval => 5,
     :dhcp_driver => dhcp_driver,
     :dhcp_domain => node[:neutron][:dhcp_domain],
-    :dhcp_relay_bridge => external_network_bridge,
     :enable_isolated_metadata => "True",
     :enable_metadata_network => "False",
     :nameservers => dns_list,

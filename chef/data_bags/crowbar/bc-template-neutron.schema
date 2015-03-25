@@ -119,6 +119,7 @@
                         "unbind_dns_records_from_fixed_address": { "type": "str", "required": true },
                         "delete_dns_records_associated_with_fixed_address": { "type": "str", "required": true },
                         "enable_dhcp_relay": { "type": "bool", "required": true },
+                        "dhcp_relay_interface": {"type": "str", "required": true},
                         "dhcp_relay_management_network": { "type": "str", "required": true },
                         "dhcp_relay_management_network_view": { "type": "str", "required": true },
                         "ib_conditionals": { type: "seq", "required": true, "sequence": [ {"type": "map", "required": false, "mapping": { "condition": { "type": "str", "required": true }, "is_external": { "type": "bool", "required": true }, "network_view": { "type": "str", "required": true }, "dns_view": { "type": "str", "required": true }, "dhcp_members": { "type": "str", "required": true }, "dns_members": { "type": "str", "required": true }, "domain_suffix_pattern": { "type": "str", "required": true }, "hostname_pattern": { "type": "str", "required": true } } }] }
