@@ -87,6 +87,7 @@
         "bind_dns_records_to_fixed_address": "record:a,record:ptr",
         "unbind_dns_records_from_fixed_address": "record:a,record:ptr",
         "delete_dns_records_associated_with_fixed_address": "record:a,record:ptr,record:txt",
+        "use_dhcp_for_ip_allocation_record": true,
         "enable_dhcp_relay": false,
         "dhcp_relay_interface": "br-fixed",
         "dhcp_relay_management_network": "",

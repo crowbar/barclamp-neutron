@@ -118,6 +118,7 @@
                         "bind_dns_records_to_fixed_address": { "type": "str", "required": true },
                         "unbind_dns_records_from_fixed_address": { "type": "str", "required": true },
                         "delete_dns_records_associated_with_fixed_address": { "type": "str", "required": true },
+                        "use_dhcp_for_ip_allocation_record": { "type": "bool", "required": true },
                         "enable_dhcp_relay": { "type": "bool", "required": true },
                         "dhcp_relay_interface": {"type": "str", "required": true},
                         "dhcp_relay_management_network": { "type": "str", "required": true },
