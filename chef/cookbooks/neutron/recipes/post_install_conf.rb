@@ -61,6 +61,10 @@ if node[:platform] == "suse" or node[:neutron][:use_gitrepo]
   neutron_args = "#{neutron_args} --endpoint-type internalURL"
   neutron_args = "#{neutron_args} --insecure" if ssl_insecure
 end
+if keystone_settings['api_version'] != "2.0"
+  neutron_args = "#{neutron_args} --os-user-domain-name Default"
+  neutron_args = "#{neutron_args} --os-project-domain-name Default"
+end
 neutron_cmd = "neutron #{neutron_args}"
 
 fixed_network_type = ""
