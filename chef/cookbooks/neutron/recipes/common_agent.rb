@@ -168,7 +168,7 @@ if neutron[:neutron][:networking_plugin] == 'ml2' and
   # Create the bridges Neutron needs.
   # Usurp config as needed.
   [ [ "nova_fixed", "fixed" ],
-    [ "public", "public"] ].each do |net|
+    [ "nova_floating", "public"] ].each do |net|
     bound_if = (node[:crowbar_wall][:network][:nets][net[0]].last rescue nil)
     next unless bound_if
     name = "br-#{net[1]}"
