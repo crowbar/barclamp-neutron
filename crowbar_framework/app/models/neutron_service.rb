@@ -285,7 +285,7 @@ class NeutronService < PacemakerServiceObject
     allocate_virtual_ips_for_any_cluster_in_networks_and_sync_dns(server_elements, vip_networks)
 
     network_nodes.each do |n|
-      net_svc.allocate_ip "default", "public", "host",n
+      net_svc.enable_interface "default", "nova_floating", n
       # TODO(toabctl): The same code is in the nova barclamp. Should be extracted and reused!
       #                (see crowbar_framework/app/models/nova_service.rb)
       if role.default_attributes["neutron"]["networking_plugin"] == "ml2"
