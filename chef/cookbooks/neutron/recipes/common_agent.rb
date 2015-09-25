@@ -172,21 +172,33 @@ if neutron[:neutron][:networking_plugin] == 'ml2' and
     bound_if = (node[:crowbar_wall][:network][:nets][net[0]].last rescue nil)
     next unless bound_if
     name = "br-#{net[1]}"
-    execute "Neutron: create #{name}" do
-      command "ovs-vsctl add-br #{name}; ip link set #{name} up"
-      not_if "ovs-vsctl list-br |grep -q #{name}"
-    end
-    execute "Neutron: add #{bound_if} to #{name}" do
-      command "ovs-vsctl del-port #{name} #{bound_if} ; ovs-vsctl add-port #{name} #{bound_if}"
-      not_if "ovs-dpctl show system@#{name} | grep -q #{bound_if}"
-    end
-    ruby_block "Have #{name} usurp config from #{bound_if}" do
+    ruby_block "Neutron: create #{name}" do
       block do
-        target = ::Nic.new(name)
-        res = target.usurp(bound_if)
-        Chef::Log.info("#{name} usurped #{res[0].join(", ")} addresses from #{bound_if}") unless res[0].empty?
-        Chef::Log.info("#{name} usurped #{res[1].join(", ")} routes from #{bound_if}") unless res[1].empty?
+          Nic::OvsBridge.create(name)
       end
+      not_if { Nic.exists?(name) && Nic.ovs_bridge?(name) }
+    end
+    ruby_block "Neutron: add #{bound_if} to #{name}" do
+      block do
+        br = Nic.new name
+        br.add_slave bound_if
+        # FIXME: Workaround for https://bugzilla.suse.com/show_bug.cgi?id=945219
+        # Find vlan interface on top of 'our_iface' that are plugged into other
+        # ovs bridges. Replug them.
+        if node.platform == "suse" && node.platform_version.to_f >= 12.0
+          parent = ::Nic.new(bound_if)
+          kids = parent.children
+          kids.each do |k|
+            next unless Nic.vlan?(k)
+            ovs_master = k.ovs_master
+            unless ovs_master.nil?
+              Chef::Log.warn("Replugging #{k.name} to #{ovs_master.name} (workaround bnc#945219)")
+              ovs_master.replug(k.name)
+            end
+          end
+        end
+      end
+      not_if { ::Nic.new(bound_if).ovs_master && ::Nic.new(bound_if).ovs_master.name == name }
     end
     source = ::Nic.new(bound_if)
     # filter out cluster VIPs that a currently assigned to the interface
