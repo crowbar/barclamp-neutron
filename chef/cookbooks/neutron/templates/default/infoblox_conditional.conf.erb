@@ -1,3 +1,19 @@
 [
-    <%= node[:neutron][:infoblox][:ib_conditionals].map{ |c| "{\"condition\": \"#{c[:condition]}\", \"is_external\": #{c[:is_external]}, \"dns_view\": \"#{c[:dns_view]}\", \"network_view\": \"#{c[:network_view]}\", \"dhcp_members\": #{c[:dhcp_members]}, \"dns_members\": #{c[:dns_members]}, \"domain_suffix_pattern\": \"#{c[:domain_suffix_pattern]}\", \"hostname_pattern\": \"#{c[:hostname_pattern]}\", \"require_dhcp_relay\": #{node[:neutron][:infoblox][:enable_dhcp_relay]}}" }.join(",\n") %>
+<% node[:neutron][:infoblox][:ib_conditionals].each do |c| %>
+    {
+      "condition": "<%= c[:condition] %>",
+      "is_external": <%= c[:is_external] %>,
+      "dns_view": "<%= c[:dns_view] %>",
+      "network_view": "<%= c[:network_view] %>",
+      "dhcp_members": <%= c[:dhcp_members] %>,
+      "dns_members": <%= c[:dns_members] %>,
+      "domain_suffix_pattern": "<%= c[:domain_suffix_pattern] %>",
+      "hostname_pattern": "<%= c[:hostname_pattern] %>",
+      "require_dhcp_relay": <%= node[:neutron][:infoblox][:enable_dhcp_relay] %>
+  <% if c == node[:neutron][:infoblox][:ib_conditionals].last %>
+    }
+  <% else %>
+    },
+  <% end %>
+<% end %>
 ]
