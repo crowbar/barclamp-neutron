@@ -31,6 +31,15 @@ interface_driver = <%= @interface_driver %>
 # Example of interface_driver option for LinuxBridge
 # interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
 
+<% if @ib_use_dhcp_relay -%>
+interface_dev_name_len = 9
+root_helper = sudo neutron-rootwrap /etc/neutron/rootwrap.conf
+dhcp_agent_manager = neutron.agent.dhcp_agent.DhcpAgentWithStateReport
+dhcp_relay_bridge = <%= node[:neutron][:infoblox][:dhcp_relay_interface] %>
+dhclient_path = <%= node[:neutron][:platform][:dhcp_relay_install_root] %>/sbin/dhclient
+dhcrelay_path = <%= node[:neutron][:platform][:dhcp_relay_install_root] %>/usr/sbin/dhcrelay
+<% end -%>
+
 # The agent can use other DHCP drivers.  Dnsmasq is the simplest and requires
 # no additional setup of the DHCP server.
 # dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
@@ -64,6 +73,9 @@ enable_metadata_network = <%= @enable_metadata_network %>
 
 # Location to store DHCP server config files
 # dhcp_confs = $state_path/dhcp
+<% if @ib_use_dhcp_relay -%>
+dhcp_confs = $state_path/dhcp
+<% end -%>
 
 # Domain to use for building the hostnames
 # dhcp_domain = openstacklocal

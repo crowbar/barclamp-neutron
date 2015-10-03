@@ -224,6 +224,23 @@ when "vmware"
   end
 end
 
+template "/etc/neutron/infoblox_members.conf" do
+  source "infoblox_members.conf.erb"
+  owner "root"
+  group node[:neutron][:platform][:group]
+  mode "0640"
+  only_if { node[:neutron][:use_infoblox] }
+  notifies :restart, "service[#{node[:neutron][:platform][:service_name]}]"
+end
+
+template "/etc/neutron/infoblox_conditional.conf" do
+  source "infoblox_conditional.conf.erb"
+  owner "root"
+  group node[:neutron][:platform][:group]
+  mode "0640"
+  only_if { node[:neutron][:use_infoblox] }
+  notifies :restart, "service[#{node[:neutron][:platform][:service_name]}]"
+end
 
 if node[:neutron][:networking_plugin] == "ml2" and node[:neutron][:ml2_mechanism_drivers].include?("cisco_nexus")
   include_recipe "neutron::cisco_support"

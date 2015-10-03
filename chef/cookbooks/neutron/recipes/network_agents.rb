@@ -23,6 +23,10 @@ unless node[:neutron][:use_gitrepo]
   if node[:neutron][:use_lbaas]
     package node[:neutron][:platform][:lbaas_agent_pkg]
   end
+
+  if node[:neutron][:use_infoblox] && node[:neutron][:infoblox][:enable_dhcp_relay]
+    node[:neutron][:platform][:dhcp_relay_pkgs].each { |p| package p }
+  end
 else
   neutron_path = "/opt/neutron"
   venv_path = node[:neutron][:use_virtualenv] ? "#{neutron_path}/.venv" : nil
@@ -138,6 +142,12 @@ template "/etc/neutron/dnsmasq-neutron.conf" do
 end
 
 dns_list = node[:dns][:forwarders].join(",")
+dhcp_driver = "neutron.agent.linux.dhcp.Dnsmasq"
+ib_use_dhcp_relay = false
+if node[:neutron][:use_infoblox] && node[:neutron][:infoblox][:enable_dhcp_relay]
+    dhcp_driver = "neutron.agent.linux.dhcp_relay.DhcpDnsProxy"
+    ib_use_dhcp_relay = true
+end
 
 template "/etc/neutron/dhcp_agent.ini" do
   source "dhcp_agent.ini.erb"
@@ -149,11 +159,12 @@ template "/etc/neutron/dhcp_agent.ini" do
     :interface_driver => interface_driver,
     :use_namespaces => "True",
     :resync_interval => 5,
-    :dhcp_driver => "neutron.agent.linux.dhcp.Dnsmasq",
+    :dhcp_driver => dhcp_driver,
     :dhcp_domain => node[:neutron][:dhcp_domain],
     :enable_isolated_metadata => "True",
     :enable_metadata_network => "False",
-    :nameservers => dns_list
+    :nameservers => dns_list,
+    :ib_use_dhcp_relay => ib_use_dhcp_relay
   )
 end
 
