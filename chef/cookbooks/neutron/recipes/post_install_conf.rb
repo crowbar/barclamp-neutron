@@ -77,20 +77,14 @@ networking_plugin = node[:neutron][:networking_plugin]
 ml2_type_drivers_default_provider_network = node[:neutron][:ml2_type_drivers_default_provider_network]
 case networking_plugin
 when 'ml2'
+  floating_network_type = "--provider:network_type flat --provider:physical_network floating"
   case ml2_type_drivers_default_provider_network
   when 'vlan'
     fixed_network_type = "--provider:network_type vlan --provider:segmentation_id #{fixed_net["vlan"]} --provider:physical_network physnet1"
-    if node[:network][:networks][:nova_floating][:use_vlan]
-      floating_network_type = "--provider:network_type vlan --provider:segmentation_id #{floating_net["vlan"]} --provider:physical_network physnet1"
-    else
-      floating_network_type = "--provider:network_type flat --provider:physical_network physnet1"
-    end
   when 'gre'
     fixed_network_type = "--provider:network_type gre --provider:segmentation_id 1"
-    floating_network_type = "--provider:network_type gre --provider:segmentation_id 2"
   when 'vxlan'
     fixed_network_type = "--provider:network_type vxlan --provider:segmentation_id #{vni_start}"
-    floating_network_type = "--provider:network_type vxlan --provider:segmentation_id #{vni_start + 1}"
   else
     Chef::Log.error("default provider network ml2 type driver '#{ml2_type_drivers_default_provider_network}' invalid for creating provider networks")
   end
@@ -120,8 +114,13 @@ execute "create_floating_network" do
   action :nothing
 end
 
+dns_options = ""
+if node[:neutron][:use_infoblox]
+    dns_options = node[:neutron][:infoblox][:ib_dnsserver].map{ |s| "--dns-nameserver #{s}" }.join(" ")
+end
+
 execute "create_fixed_subnet" do
-  command "#{neutron_cmd} subnet-create --name fixed --allocation-pool start=#{fixed_pool_start},end=#{fixed_pool_end} fixed #{fixed_range}"
+  command "#{neutron_cmd} subnet-create --name fixed --allocation-pool start=#{fixed_pool_start},end=#{fixed_pool_end} fixed #{fixed_range} #{dns_options}"
   not_if "out=$(#{neutron_cmd} subnet-list); [ $? != 0 ] || echo ${out} | grep -q ' fixed '"
   retries 5
   retry_delay 10

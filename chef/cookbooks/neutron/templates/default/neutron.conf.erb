@@ -521,6 +521,39 @@ rpc_backend=rabbit
 #control_exchange=openstack
 control_exchange = neutron
 
+<% if node[:neutron][:use_infoblox] %>
+# ======== Infoblox/DDI specific settings ========
+# Infoblox WAPI url
+infoblox_wapi = <%= node[:neutron][:infoblox][:ib_wapi] %>
+
+# Infoblox username
+infoblox_username = <%= node[:neutron][:infoblox][:ib_username] %>
+
+# Infoblox password
+infoblox_password = <%= node[:neutron][:infoblox][:ib_password] %>
+
+# IPAM driver class
+ipam_driver = neutron.ipam.drivers.infoblox.infoblox_ipam.InfobloxIPAM
+
+# Infoblox conditional config path
+conditional_config = /etc/neutron/infoblox_conditional.conf
+
+# Path to a JSON file which contains available Infoblox members
+infoblox_members_config = /etc/neutron/infoblox_members.conf
+
+# Use one Infoblox member per tenant or Neutron network
+# use_one_member_per_tenant=False
+
+use_host_records_for_ip_allocation = <%= node[:neutron][:infoblox][:use_host_records_for_ip_allocation] %>
+bind_dns_records_to_fixed_address = <%= node[:neutron][:infoblox][:bind_dns_records_to_fixed_address] %>
+unbind_dns_records_from_fixed_address = <%= node[:neutron][:infoblox][:unbind_dns_records_from_fixed_address] %>
+delete_dns_records_associated_with_fixed_address = <%= node[:neutron][:infoblox][:delete_dns_records_associated_with_fixed_address] %>
+use_dhcp_for_ip_allocation_record = <%= node[:neutron][:infoblox][:use_dhcp_for_ip_allocation_record] %>
+
+dhcp_relay_management_network = <%= node[:neutron][:infoblox][:dhcp_relay_management_network] %>
+dhcp_relay_management_network_view = <%= node[:neutron][:infoblox][:dhcp_relay_management_network_view] %>
+<% end -%>
+
 [matchmaker_redis]
 
 #

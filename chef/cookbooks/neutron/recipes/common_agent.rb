@@ -256,6 +256,12 @@ if neutron[:neutron][:networking_plugin] == "ml2"
     agent_config_path = "/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini"
     interface_driver = "neutron.agent.linux.interface.BridgeInterfaceDriver"
     external_network_bridge = ""
+    physnet = node[:crowbar_wall][:network][:nets][:nova_fixed].first
+    interface_mappings = "physnet1:" + physnet
+    if neutron[:neutron][:use_dvr] || node.roles.include?("neutron-network")
+      floatingphys = node[:crowbar_wall][:network][:nets][:nova_floating].last
+      interface_mappings += ", floating:" + floatingphys
+    end
   end
 
   # include neutron::common_config only now, after we've installed packages
@@ -317,7 +323,7 @@ if neutron[:neutron][:networking_plugin] == "ml2"
       group node[:neutron][:platform][:group]
       mode "0640"
       variables(
-        :physnet => (node[:crowbar_wall][:network][:nets][:nova_fixed].first rescue nil),
+        :interface_mappings => interface_mappings,
         :ml2_type_drivers => ml2_type_drivers,
         :vxlan_mcast_group => neutron[:neutron][:vxlan][:multicast_group],
         :use_l2pop => neutron[:neutron][:use_l2pop] && ml2_type_drivers.include?("vxlan")
