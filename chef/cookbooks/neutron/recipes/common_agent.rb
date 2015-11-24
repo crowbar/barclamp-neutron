@@ -259,8 +259,14 @@ if neutron[:neutron][:networking_plugin] == "ml2"
     physnet = node[:crowbar_wall][:network][:nets][:nova_fixed].first
     interface_mappings = "physnet1:" + physnet
     if neutron[:neutron][:use_dvr] || node.roles.include?("neutron-network")
-      floatingphys = node[:crowbar_wall][:network][:nets][:nova_floating].last
-      interface_mappings += ", floating:" + floatingphys
+      external_networks = ["nova_floating"]
+      ext_physnet_map = NeutronHelper.get_neutron_physnets(node, external_networks)
+      external_networks.each do |net|
+        ext_iface = node[:crowbar_wall][:network][:nets][net].last
+        next if ext_physnet_map[net] == "physnet1"
+        mapping = ", " + ext_physnet_map[net] + ":" + ext_iface
+        interface_mappings += mapping
+      end
     end
   end
 
