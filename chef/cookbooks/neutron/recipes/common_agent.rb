@@ -211,8 +211,9 @@ if neutron[:neutron][:networking_plugin] == 'ml2' and
     end
     service "ovs-usurp-config-#{name}" do
       # Don't start it here. It only needs to be executed during boot.
-      action [:nothing]
-      subscribes :enable, resources("template[/etc/init.d/ovs-usurp-config-#{name}]")
+      action [:enable]
+      # see comment in template above
+      not_if { addresses.empty? and routes.empty? }
     end
   end
 else
