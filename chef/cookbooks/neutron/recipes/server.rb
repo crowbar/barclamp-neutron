@@ -178,6 +178,14 @@ tenant_network_types = [[node[:neutron][:ml2_type_drivers_default_tenant_network
 
 case node[:neutron][:networking_plugin]
 when 'ml2'
+  # Find out which physical interfaces we need to define in the config (depends
+  # on whether one of the external networks will share the physical interface
+  # with "nova_fixed".
+  external_networks = ["nova_floating"]
+  network_node = NeutronHelper.get_network_node_from_neutron_attributes(node)
+  physnet_map = NeutronHelper.get_neutron_physnets(network_node, external_networks)
+  physnets = physnet_map.values
+
   ml2_type_drivers = node[:neutron][:ml2_type_drivers]
   ml2_mechanism_drivers = node[:neutron][:ml2_mechanism_drivers].dup.push("hyperv")
   if node[:neutron][:use_l2pop] && (ml2_type_drivers.include?("gre") || ml2_type_drivers.include?("vxlan"))
@@ -199,7 +207,8 @@ when 'ml2'
       :gre_end => gre_end,
       :vxlan_start => vni_start,
       :vxlan_end => vni_end,
-      :vxlan_mcast_group => node[:neutron][:vxlan][:multicast_group]
+      :vxlan_mcast_group => node[:neutron][:vxlan][:multicast_group],
+      :external_networks => physnets
     )
   end
 when "vmware"

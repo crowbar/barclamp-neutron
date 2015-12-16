@@ -77,7 +77,11 @@ networking_plugin = node[:neutron][:networking_plugin]
 ml2_type_drivers_default_provider_network = node[:neutron][:ml2_type_drivers_default_provider_network]
 case networking_plugin
 when 'ml2'
-  floating_network_type = "--provider:network_type flat --provider:physical_network floating"
+  # find the network node, to figure out the right "physnet" parameter
+  network_node = NeutronHelper.get_network_node_from_neutron_attributes(node)
+  ext_physnet_map = NeutronHelper.get_neutron_physnets(network_node, ["nova_floating"])
+  floating_network_type = "--provider:network_type flat " \
+    "--provider:physical_network #{ext_physnet_map["nova_floating"]}"
   case ml2_type_drivers_default_provider_network
   when 'vlan'
     fixed_network_type = "--provider:network_type vlan --provider:segmentation_id #{fixed_net["vlan"]} --provider:physical_network physnet1"
