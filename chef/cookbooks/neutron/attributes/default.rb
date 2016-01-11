@@ -73,9 +73,6 @@ when "suse"
     :l3_agent_name => "openstack-neutron-l3-agent",
     :l3_agent_pkg => "openstack-neutron-l3-agent",
     :ha_tool_pkg => "openstack-neutron-ha-tool",
-    :ovs_pkgs => [ "openvswitch",
-                   "openvswitch-switch",
-                   "openvswitch-kmp-default" ],
     :nsx_pkgs => [ "openvswitch-pki",
                    "ruby2.1-rubygem-faraday" ],
     :cisco_pkgs => [ "openstack-neutron-plugin-cisco" ],
@@ -86,7 +83,6 @@ when "suse"
     :dhcp_relay_install_root => "",
     :user => "neutron",
     :group => "neutron",
-    :ovs_modprobe => "modprobe openvswitch",
     :neutron_rootwrap_sudo_template => "/etc/sudoers.d/openstack-neutron"
   }
 when "centos", "redhat"
@@ -109,11 +105,8 @@ when "centos", "redhat"
     :l3_agent_name => "neutron-l3-agent",
     :l3_agent_pkg => "openstack-neutron",
     :ha_tool_pkg => "",
-    :ovs_pkgs => [ "openvswitch",
-                   "openstack-neutron-openvswitch" ],
     :user => "neutron",
     :group => "neutron",
-    :ovs_modprobe => "modprobe openvswitch",
     :neutron_rootwrap_sudo_template => "/etc/sudoers.d/openstack-neutron"
   }
 else
@@ -137,14 +130,10 @@ else
     :l3_agent_name => "neutron-l3-agent",
     :l3_agent_pkg => "neutron-l3-agent",
     :ha_tool_pkg => "",
-    :ovs_pkgs => [ "linux-headers-#{`uname -r`.strip}",
-                   "openvswitch-datapath-dkms",
-                   "openvswitch-switch" ],
     :nsx_pkgs => [ "" ],
     :cisco_pkgs => [ "" ],
     :user => "neutron",
     :group => "neutron",
-    :ovs_modprobe => "modprobe openvswitch",
     :neutron_rootwrap_sudo_template => "/etc/sudoers.d/neutron-rootwrap"
   }
 end
