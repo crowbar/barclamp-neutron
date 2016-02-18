@@ -151,6 +151,14 @@ if neutron[:neutron][:networking_plugin] == "ml2"
     agent_config_path = "/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini"
     interface_driver = "neutron.agent.linux.interface.OVSInterfaceDriver"
     external_network_bridge = "br-public"
+    bridge_mappings = ""
+    if neutron[:neutron][:use_dvr] || node.roles.include?("neutron-network")
+      bridge_mappings = "floating:br-public"
+    end
+    if ml2_type_drivers.include?("vlan")
+      bridge_mappings += ", " unless bridge_mappings.empty?
+      bridge_mappings += "physnet1:br-fixed"
+    end
   when ml2_mech_drivers.include?("linuxbridge")
     package node[:neutron][:platform][:lb_agent_pkg]
 
@@ -211,7 +219,8 @@ if neutron[:neutron][:networking_plugin] == "ml2"
         :ml2_type_drivers => ml2_type_drivers,
         :tunnel_types => ml2_type_drivers.select { |t| ["vxlan", "gre"].include?(t) },
         :use_l2pop => neutron[:neutron][:use_l2pop] && (ml2_type_drivers.include?("gre") || ml2_type_drivers.include?("vxlan")),
-        :dvr_enabled => neutron[:neutron][:use_dvr]
+        :dvr_enabled => neutron[:neutron][:use_dvr],
+        :bridge_mappings => bridge_mappings
       )
     end
   when ml2_mech_drivers.include?("linuxbridge")
