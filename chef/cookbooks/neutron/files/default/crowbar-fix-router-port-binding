@@ -1,0 +1,44 @@
+#!/usr/bin/python
+
+import sqlalchemy
+import sys
+from oslo_config import cfg
+
+_cli_opts = [
+    cfg.StrOpt('router',
+               required=True,
+               help='name of the network to update'),
+]
+
+_db_opts = [
+    cfg.StrOpt('connection',
+               deprecated_name='sql_connection',
+               default='',
+               secret=True,
+               help='URL to database'),
+]
+
+CONF = cfg.ConfigOpts()
+CONF.register_cli_opts(_db_opts, 'database')
+CONF.register_cli_opts(_cli_opts)
+CONF(project='neutron')
+
+db_uri = CONF.database.connection
+
+router = CONF.router
+
+db = sqlalchemy.create_engine(db_uri)
+try:
+    connection = db.connect()
+except sqlalchemy.exc.SQLAlchemyError as e:
+    print >>sys.stderr, 'Cannot connect to database: %s' % e
+    sys.exit(1)
+
+ret = connection.execute(
+    "UPDATE ml2_port_bindings set vif_type='unbound' "
+    "FROM routers,ports "
+    "WHERE ml2_port_bindings.vif_type='binding_failed' "
+    "AND routers.name=%s "
+    "AND routers.id=ports.device_id "
+    "AND ports.device_owner='network:router_gateway' "
+    "AND ports.id=ml2_port_bindings.port_id;", router)
