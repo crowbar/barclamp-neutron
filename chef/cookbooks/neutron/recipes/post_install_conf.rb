@@ -92,6 +92,62 @@ when 'ml2'
   else
     Chef::Log.error("default provider network ml2 type driver '#{ml2_type_drivers_default_provider_network}' invalid for creating provider networks")
   end
+
+  # *START* workaround for https://bugzilla.suse.com/show_bug.cgi?id=967009
+  unless node[:neutron][:floating_router_fix]
+    cookbook_file "crowbar-fix-floating-provider-attributes" do
+      source "crowbar-fix-floating-provider-attributes"
+      path "/usr/bin/crowbar-fix-floating-provider-attributes"
+      mode "0755"
+      only_if "out=$(#{neutron_cmd} net-show floating -f value -F provider:network_type); " \
+        "[ $? == 0 ] && [ ${out} != \"flat\" ]"
+    end
+
+    # This adjusts the provider attributes of the existing "floating" network
+    # to actually match what we want ("flat" network on the correct physnet)
+    execute "fix floating network provider attributes" do
+      command "/usr/bin/crowbar-fix-floating-provider-attributes " \
+        "--physnet #{ext_physnet_map["nova_floating"]} --segmentation_id 0 --type flat " \
+        "--tenant_id #{keystone_settings['service_tenant_id']} --network floating"
+      action :run
+      only_if "out=$(#{neutron_cmd} net-show floating -f value -F provider:network_type); " \
+        "[ $? == 0 ] && [ ${out} != \"flat\" ]"
+    end
+
+    file "/usr/bin/crowbar-fix-floating-provider-attributes" do
+      action :delete
+    end
+
+    if node[:neutron][:ml2_mechanism_drivers].include?("openvswitch")
+      # In case the router was created after https://bugzilla.suse.com/show_bug.cgi?id=946882
+      # was fixed, we likely had the wrong bridge mappings in the config and the
+      # gateway port is in a "binding_failed" state. This tries to reset the port.
+      cookbook_file "crowbar-fix-router-port-binding" do
+        source "crowbar-fix-router-port-binding"
+        path "/usr/bin/crowbar-fix-router-port-binding"
+        mode "0755"
+      end
+
+      execute "reset port binding for floating network (bsc#967009)" do
+        command "/usr/bin/crowbar-fix-router-port-binding --router router-floating"
+        action :run
+        only_if "out=$(#{neutron_cmd} router-list); [ $? != 0 ] || echo ${out} | grep -q router-floating"
+      end
+
+      file "/usr/bin/crowbar-fix-router-port-binding" do
+        action :delete
+      end
+    end
+
+    ruby_block "mark node for having the floating network fixed (bsc#967009)" do
+      block do
+        node[:neutron][:floating_router_fix] = true
+        node.save
+      end
+    end
+  end
+  # *END* workaround for https://bugzilla.suse.com/show_bug.cgi?id=967009
+
 when 'vmware'
   fixed_network_type = ""
   # We would like to be sure that floating network will be created
