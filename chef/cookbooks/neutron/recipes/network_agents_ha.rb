@@ -149,6 +149,7 @@ pacemaker_primitive ha_tool_primitive_name do
     "os_username"    => keystone_settings["admin_user"],
     "os_insecure"    => keystone_settings["insecure"] || node[:neutron][:ssl][:insecure]
   })
+  op node[:neutron][:ha][:neutron_ha_tool][:op]
   op node[:neutron][:ha][:network][:op]
   action [ :create, :start ]
   only_if { use_l3_agent && CrowbarPacemakerHelper.is_cluster_founder?(node) }
