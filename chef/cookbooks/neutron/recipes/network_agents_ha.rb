@@ -113,6 +113,9 @@ end
 pacemaker_clone agents_clone_name do
   rsc agents_group_name
   action [ :create, :start ]
+  meta ({
+    "interleave" => "true",
+  })
   only_if { CrowbarPacemakerHelper.is_cluster_founder?(node) }
 end
 
