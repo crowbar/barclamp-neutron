@@ -122,6 +122,14 @@ auth_strategy = keystone
 # Allow sending resource operation notification to DHCP agent
 # dhcp_agent_notification = True
 
+# Allows the metadata proxy to be spawned also for networks that have
+# enable_dhcp set to False. This is useful if an external appliance is
+# used to provide DHCP services  but there's still the need to spawn
+# the metadata proxy in the DHCP namespace to be able to reach the
+# metadata server.
+# use_external_dhcp = False
+use_external_dhcp = <%= @use_external_dhcp %>
+
 # Enable or disable bulk create/update/delete operations
 # allow_bulk = True
 # Enable or disable pagination

@@ -46,6 +46,7 @@
         "multicast_group": "239.1.1.1"
       },
       "allow_overlapping_ips": true,
+      "use_external_dhcp": false,
       "use_syslog": false,
       "database_instance": "none",
       "db": {
