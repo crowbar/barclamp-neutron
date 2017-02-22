@@ -217,45 +217,61 @@ $(document).ready(function($) {
     var non_forced_mode = networking_mode.data('non-forced');
 
     switch (value) {
-      case 'linuxbridge':
-        if (non_forced_mode == undefined) {
-          networking_mode.data('non-forced', networking_mode.val());
-        }
-        networking_mode.val('vlan').trigger('change');
-        $('#mode_container').hide(100).attr('disabled', 'disabled');
-
-        $('#vmware_container').hide(100).attr('disabled', 'disabled');
-        break;
-      case 'openvswitch':
-        if (non_forced_mode != undefined) {
-          networking_mode.val(non_forced_mode);
-          networking_mode.removeData('non-forced');
-        }
-
-        $('#mode_container').show(100).removeAttr('disabled');
-        networking_mode.trigger('change');
-
-        $('#vmware_container').hide(100).attr('disabled', 'disabled');
-        break;
-      case 'cisco':
-        if (non_forced_mode != undefined) {
-          networking_mode.val(non_forced_mode);
-          networking_mode.removeData('non-forced');
-        }
-
-        $('#mode_container').show(100).removeAttr('disabled');
-        networking_mode.trigger('change');
-
-        $('#vmware_container').hide(100).attr('disabled', 'disabled');
-        break;
       case 'vmware':
         if (non_forced_mode == undefined) {
           networking_mode.data('non-forced', networking_mode.val());
         }
-        networking_mode.val('gre').trigger('change');
-        $('#mode_container').hide(100).attr('disabled', 'disabled');
 
+        $('#networking_mode option')
+          .removeAttr('selected')
+          .siblings('[value=gre]')
+          .attr('selected', true)
+          .trigger('change');
+
+        $('#mode_container').hide(100).attr('disabled', 'disabled');
         $('#vmware_container').show(100).removeAttr('disabled');
+        break;
+      case 'linuxbridge':
+        if (non_forced_mode == undefined) {
+          networking_mode.data('non-forced', networking_mode.val());
+        }
+
+        $('#networking_mode option')
+          .removeAttr('selected')
+          .siblings('[value=vlan]')
+          .attr('selected', true)
+          .trigger('change');
+
+        $('#mode_container').hide(100).attr('disabled', 'disabled');
+        $('#vmware_container').hide(100).attr('disabled', 'disabled');
+        break;
+      case 'openvswitch':
+        if (non_forced_mode != undefined) {
+          $('#networking_mode option')
+            .removeAttr('selected')
+            .siblings('[value={0}]'.format(non_forced_mode))
+            .attr('selected', true)
+            .trigger('change');
+
+          networking_mode.removeData('non-forced');
+        }
+
+        $('#mode_container').show(100).removeAttr('disabled');
+        $('#vmware_container').hide(100).attr('disabled', 'disabled');
+        break;
+      case 'cisco':
+        if (non_forced_mode != undefined) {
+          $('#networking_mode option')
+            .removeAttr('selected')
+            .siblings('[value={0}]'.format(non_forced_mode))
+            .attr('selected', true)
+            .trigger('change');
+
+          networking_mode.removeData('non-forced');
+        }
+
+        $('#mode_container').show(100).removeAttr('disabled');
+        $('#vmware_container').hide(100).attr('disabled', 'disabled');
         break;
     }
   }).trigger('change');
