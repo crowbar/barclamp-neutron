@@ -51,6 +51,20 @@ bash "reload disable-rp_filter-sysctl" do
   subscribes :run, resources(:cookbook_file=> disable_rp_filter_file), :delayed
 end
 
+# TCP_KEEPALIVE_TIME tunning in case of RabbitMQ crashes
+# This problem occur in non-HA and HA architecture, 
+# therefore we would like to have it on all nodes always
+tune_tcp_keepalive_time  = "/etc/sysctl.d/50-neutron-tune-tcp_keepalive_time.conf"
+cookbook_file tune_tcp_keepalive_time do
+  source "sysctl-tune-tcp_keepalive_time.conf"
+  mode "0644"
+end
+
+bash "reload tune_tcp_keepalive_time" do
+  code "/sbin/sysctl -e -q -p #{tune_tcp_keepalive_time}"
+  action :nothing
+  subscribes :run, resources(:cookbook_file=> tune_tcp_keepalive_time), :delayed
+end
 
 case neutron[:neutron][:networking_plugin]
 when "openvswitch", "cisco"
